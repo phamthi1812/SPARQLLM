@@ -2,3 +2,10 @@ __pycache__/
 *.py[cod]
 build/*
 *.egg-info
+.claude/
+venv312
+.vscode
+.repomixignore
+demo
+CLAUDE.md
+.opencode
