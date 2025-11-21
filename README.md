@@ -28,6 +28,67 @@ SELECT ?msg {
 
 This README focuses on running a first query without any API key or remote dependency. Optional advanced capabilities (web search, online LLMs, vector similarity) can be enabled later but are not required for the basic examples below.
 
+## MCP Server (Model Context Protocol)
+
+SPARQLLM now includes an MCP server that exposes neuro-symbolic RAG capabilities to AI agents like Claude Desktop. The server provides tools for:
+- **sparql_query**: Execute SPARQL queries with Graph Generating Functions
+- **extract_structured_data**: Extract data from files (CSV, HTML, TXT, PDF)
+- **web_to_knowledge**: Fetch and extract content from webpages
+
+### Quick Start
+
+1. **Installation**:
+   ```bash
+   pip install -e .
+   ```
+
+2. **Start the MCP server**:
+   ```bash
+   slm-mcp-server --config config.ini
+   ```
+
+3. **Configure in Claude Desktop** (`claude_desktop_config.json`):
+   ```json
+   {
+     "mcpServers": {
+       "sparqllm": {
+         "command": "slm-mcp-server",
+         "args": ["--config", "/path/to/config.ini"]
+       }
+     }
+   }
+   ```
+
+4. **Example usage in Claude**:
+   ```
+   "Extract city names from ./data/results.csv"
+   "Search for papers about semantic web and summarize them"
+   ```
+
+### Available Tools
+
+- **sparql_query**: Core SPARQL execution with GGF support
+  - Supports SELECT, CONSTRUCT, ASK, DESCRIBE queries
+  - Output formats: JSON-LD, JSON, CSV, Turtle
+  - Timeout control and result limiting
+
+- **extract_structured_data**: File → Parser → LLM → Structured Data
+  - Auto-detects file format (CSV, HTML, TXT)
+  - Configurable result limits and timeouts
+
+- **web_to_knowledge**: URL → Scrape → Knowledge Graph
+  - Fetches webpage content
+  - Extracts text and structured data
+
+### Testing
+
+Run the MCP server test suite:
+```bash
+pytest tests/test_mcp_server_basic.py tests/test_sparql_query_tool.py tests/test_resources.py tests/test_convenience_tools.py -v
+```
+
+Test coverage: **75%** overall, with >85% coverage on core modules.
+
 ## running 
 ```
 % slm-run --help
