@@ -1,0 +1,38 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <http://schema.org/>
+
+# Query 3: Fetch Wikipedia summaries for top killers
+# Category: CSV + Web Scraping
+# Cost: ~10 HTTP requests, <5 seconds
+# Question: "Get Wikipedia summaries for the most prolific killers"
+
+SELECT ?name ?proven_victims ?summary
+WHERE {
+    # Load CSV data
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:proven_victims ?proven_victims .
+    }
+
+    # Get top 5 killers only
+    FILTER(?proven_victims > 150)
+
+    # Construct Wikipedia URL from name
+    BIND(CONCAT("https://en.wikipedia.org/wiki/",
+                REPLACE(STR(?name), " ", "_")) AS ?wikiUrl)
+
+    # Fetch Wikipedia page content
+    BIND(ggf:SLM-GETTEXT(?wikiUrl) AS ?webGraph)
+
+    GRAPH ?webGraph {
+        ?page schema:text ?fullText .
+    }
+
+    # Extract first paragraph as summary (first 500 chars)
+    BIND(SUBSTR(?fullText, 1, 500) AS ?summary)
+}
+ORDER BY DESC(?proven_victims)
+LIMIT 5

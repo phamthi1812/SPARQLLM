@@ -23,13 +23,13 @@ from SPARQLLM.utils.utils import named_graph_exists, print_result_as_table, is_v
 import logging
 logger = logging.getLogger(__name__)
 
-def LLMGRAPH_OLLAMA(prompt, uri):
+def LLMGRAPH_OLLAMA(prompt, uri=None):
     """
     Processes a given prompt using the OLLAMA API and updates a named graph with the response.
 
     Args:
         prompt (str): The prompt to be sent to the OLLAMA API.
-        uri (str): The URI of an entity to link to.
+        uri (str, optional): The URI of an entity to link to. Defaults to None.
 
     Returns:
         URIRef: The URI of the new fresh immutable named graph.
@@ -62,6 +62,11 @@ def LLMGRAPH_OLLAMA(prompt, uri):
     assert timeout > 0, "OLLAMA Timeout not defined nor positive"
     assert prompt != "", "Prompt is empty"
     assert store is not None, "Store is not defined"
+
+    # Handle None uri - create default if not provided
+    if uri is None:
+        uri = URIRef("http://example.org/default-entity")
+
     logger.debug(f"uri: {uri}, Prompt: {prompt[:100]} <...>, API: {api_url}, Timeout: {timeout}, Model: {model}")
     graph_name = prompt + ":"+str(uri)
     graph_uri = URIRef("http://ollama.org/"+hashlib.sha256(graph_name.encode()).hexdigest())

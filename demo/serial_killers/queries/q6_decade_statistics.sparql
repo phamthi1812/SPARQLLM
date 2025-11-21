@@ -1,0 +1,26 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Query 6: Statistical aggregation by decade
+# Category: CSV Aggregation with GROUP BY
+# Cost: <100ms, zero API calls
+# Question: "How many serial killers were active in each decade?"
+
+SELECT ?decade (COUNT(?name) AS ?killers)
+       (SUM(?proven_victims) AS ?total_victims)
+       (AVG(?proven_victims) AS ?avg_victims)
+WHERE {
+    # Load CSV data
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:decade ?decade .
+        ?row ex:proven_victims ?proven_victims .
+    }
+
+    # Filter for valid decades
+    FILTER(BOUND(?decade) && ?decade != "nan")
+}
+GROUP BY ?decade
+ORDER BY ?decade

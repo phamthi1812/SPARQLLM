@@ -1,0 +1,31 @@
+================================================================================
+DATA CLEANING REPORT
+================================================================================
+Generated: 2025-11-20 17:46:50
+
+ROW COUNTS:
+  Original: 757
+  Cleaned:  757
+  Removed:  0
+
+COLUMNS:
+  Original: ['Name', 'Country', 'Start year', 'End year', 'Proven victims', 'Possible victims', 'Notes']
+  Cleaned:  ['name', 'country', 'start_year', 'end_year', 'proven_victims', 'possible_victims', 'notes', 'decade', 'victim_min', 'victim_max']
+
+DERIVED COLUMNS ADDED:
+  - decade: 757/757 (100.0%) computed
+  - victim_min: 757/757 (100.0%) computed
+  - victim_max: 757/757 (100.0%) computed
+
+MISSING DATA:
+  Original: 39 cells
+  Cleaned:  39 cells
+
+VICTIM COUNT PARSING:
+  Valid counts: 757/757 (100.0%)
+  Total victims (min): 9551
+  Average victims: 12.6
+
+================================================================================
+END OF REPORT
+================================================================================

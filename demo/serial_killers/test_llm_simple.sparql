@@ -1,0 +1,16 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX schema: <http://schema.org/>
+
+# Simple LLM test - no CSV, just direct LLM call
+SELECT ?name ?desc
+WHERE {
+    BIND("Extract info about Ted Bundy as JSON-LD: {\"@context\": \"http://schema.org/\", \"@type\": \"Person\", \"name\": \"Ted Bundy\", \"description\": \"serial killer methods\"}" AS ?prompt)
+
+    BIND(ggf:SLM-LLMGRAPH(?prompt) AS ?llmGraph)
+
+    GRAPH ?llmGraph {
+        ?person a schema:Person ;
+                schema:name ?name ;
+                schema:description ?desc .
+    }
+}

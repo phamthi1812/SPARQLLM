@@ -1,0 +1,26 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <https://schema.org/>
+
+# Query 5: Analyze geographical patterns (multi-country killers)
+# Category: CSV Aggregation + Pattern Detection
+# Cost: <100ms, zero API calls
+# Question: "Which serial killers operated across multiple countries?"
+
+SELECT ?name ?country ?proven_victims ?possible_victims
+WHERE {
+    # Load CSV data
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:country ?country .
+        ?row ex:proven_victims ?proven_victims .
+        ?row ex:possible_victims ?possible_victims .
+    }
+
+    # Filter for multi-country patterns (country field contains comma)
+    FILTER(CONTAINS(?country, ","))
+}
+ORDER BY DESC(?proven_victims)
+LIMIT 15

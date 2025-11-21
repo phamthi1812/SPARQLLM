@@ -1,0 +1,101 @@
+================================================================================
+SERIAL KILLERS DATASET - INSPECTION REPORT
+================================================================================
+Generated: 2025-11-20 17:46:06
+
+================================================================================
+SCHEMA ANALYSIS
+================================================================================
+
+Shape: 757 rows × 7 columns
+
+Columns: ['Name', 'Country', 'Start year', 'End year', 'Proven victims', 'Possible victims', 'Notes']
+
+Data Types:
+  - Name: object
+  - Country: object
+  - Start year: float64
+  - End year: float64
+  - Proven victims: float64
+  - Possible victims: float64
+  - Notes: object
+
+Memory Usage: 322.33 KB
+
+================================================================================
+MISSING DATA ANALYSIS
+================================================================================
+
+Total Missing Values: 39
+
+Per Column:
+  ✅ Name: 0 (0.0%)
+  ✅ Country: 0 (0.0%)
+  ❌ Start year: 19 (2.5%)
+  ❌ End year: 17 (2.2%)
+  ✅ Proven victims: 0 (0.0%)
+  ✅ Possible victims: 0 (0.0%)
+  ❌ Notes: 3 (0.4%)
+
+================================================================================
+VALUE DISTRIBUTIONS
+================================================================================
+
+📊 Name
+   Unique values: 757
+
+📊 Country
+   Unique values: 113
+
+📊 Start year
+   Unique values: 120
+   Min: 1871.0
+   Max: 2023.0
+   Mean: 1978.68
+   Median: 1984.00
+
+📊 End year
+   Unique values: 113
+   Min: 1873.0
+   Max: 2032.0
+   Mean: 1985.87
+   Median: 1992.00
+
+📊 Proven victims
+   Unique values: 66
+   Min: 1.0
+   Max: 400.0
+   Mean: 12.62
+   Median: 7.00
+
+📊 Possible victims
+   Unique values: 91
+   Min: 2.0
+   Max: 1000.0
+   Mean: 24.76
+   Median: 11.00
+
+📊 Notes
+   Unique values: 754
+
+================================================================================
+DATA QUALITY CHECKS
+================================================================================
+✅ No duplicate rows
+
+✅ No data quality issues detected
+
+================================================================================
+SAMPLE ROWS (first 5)
+================================================================================
+
+                     Name                       Country  Start year  End year  Proven victims  Possible victims                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Notes
+0           Luis Garavito  Colombia, Ecuador, Venezuela      1992.0    1999.0           193.0             247.0                    Child-murderer, torture-killer, and rapist known as "La Bestia" ("The Beast"). Garavito confessed to killing 140 boys between six and sixteen years old, from October 1992 to April 1999 in Colombia and neighboring countries. He is suspected of murdering over 300 victims, mostly street children. Garavito was originally sentenced to 1,853 years in prison, but this was later reduced to 22 years, after he led police to many of the bodies of his victims. He was scheduled to become eligible for parole in 2023. He died on October 12, 2023.
+1             Pedro López       Colombia, Peru, Ecuador      1969.0    1980.0           110.0             300.0                                                                                                                                                                                                Child-murderer and rapist, known as "The Monster of the Andes". López targeted young girls, between the ages of eight and twelve. Arrested in 1980 and convicted in 1983 of killing three young girls, but claimed to have killed hundreds. Despite being believed to be one of the most prolific serial killers of the twentieth century, he was released in the late 1990s.
+2             Javed Iqbal                      Pakistan      1998.0    1999.0           100.0             100.0  Child-murderer and rapist, known as "Kukri", Iqbal murdered 100 street children by strangling them and covering up his crimes by dissolving the bodies with acid. He was arrested in December 1999 after sending a letter to a newspaper, and was set to be executed in the manner described by the judge, who stated, "You will be strangled to death in front of the parents whose children you killed" and, "Your body will then be cut into 100 pieces and put in acid, the same way you killed the children." However, he died in custody before he could be executed.
+3          Mikhail Popkov                        Russia      1992.0    2010.0            83.0              86.0                                                                                                            Serial rapist-killer nicknamed "The Werewolf", who was active for two decades in Angarsk, Irkutsk and Vladivostok. After being convicted of 22 murders in 2015, he confessed to an additional 59 murders, of which he was convicted of 56 in 2018. In July 2020, Popkov confessed to more killings, bringing the total number of admitted victims to 83. He was convicted of additional two killings in 2021 and another three in 2023. He was sentenced to life.
+4  Daniel Camargo Barbosa     Colombia, Ecuador, Brazil      1974.0    1986.0            72.0             180.0                                          Child and woman murderer, believed to have possibly raped and killed over 150 victims, primarily targeting female children, as they were more likely to be virgins. Confessed to killing 72 victims. He strangled young girls in Colombia and was arrested, but he escaped from prison, and started killing in Ecuador. He was rearrested in 1986, and was allegedly incarcerated in the same Ecuadorian prison as 300+ serial killer Pedro López.[citation needed] Camargo was killed in jail by the nephew of one of his victims.
+
+================================================================================
+END OF REPORT
+================================================================================

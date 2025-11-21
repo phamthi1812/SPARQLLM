@@ -1,0 +1,61 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <http://schema.org/>
+
+# Query 2: Extract killing methods by decade using LLM
+# Category: CSV + LLM Analysis
+# Cost: ~5 LLM calls (local), <20 seconds
+# Question: "What killing methods were most common in each decade?"
+#
+# NOTE: Uses subquery with LIMIT to reduce LLM calls from 531 to 5
+# For batch processing of all rows, remove the LIMIT in the subquery
+
+SELECT ?decade ?name ?methods
+WHERE {
+    # Subquery: Filter and limit CSV rows BEFORE LLM calls
+    # This prevents 531 expensive LLM calls
+    {
+        SELECT ?name ?notes ?decade WHERE {
+            # Load CSV data
+            BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+            GRAPH ?csvGraph {
+                ?row ex:name ?name .
+                ?row ex:decade ?decade .
+            }
+
+            # Notes column may have NULL values, so make it optional
+            OPTIONAL {
+                GRAPH ?csvGraph {
+                    ?row ex:notes ?notes .
+                }
+            }
+
+            # Filter for specific decades to limit API calls
+            FILTER(?decade IN ("1970s", "1980s", "1990s", "2000s"))
+        }
+        ORDER BY ?decade ?name
+        LIMIT 5  # ← CRITICAL: Limits rows BEFORE LLM calls
+    }
+
+    # Use LLM to extract methods from notes (now only 5 calls)
+    BIND(CONCAT(
+        "Extract the killing methods used by this serial killer from the text. ",
+        "Return ONLY a JSON-LD object with this exact structure (no extra text): ",
+        "{",
+        "  \"@context\": \"http://schema.org/\",",
+        "  \"@type\": \"Person\",",
+        "  \"name\": \"", STR(?name), "\",",
+        "  \"description\": \"brief comma-separated list of methods (e.g., shooting, stabbing, poisoning)\"",
+        "}",
+        "\n\nText: ", SUBSTR(?notes, 1, 500)
+    ) AS ?prompt)
+
+    BIND(ggf:SLM-LLMGRAPH(?prompt) AS ?llmGraph)
+
+    GRAPH ?llmGraph {
+        ?person a schema:Person ;
+                schema:description ?methods .
+    }
+}
+ORDER BY ?decade ?name

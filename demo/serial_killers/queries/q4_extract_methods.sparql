@@ -1,0 +1,52 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <http://schema.org/>
+
+# Query 4: Extract structured killing methods using LLM
+# Category: Pure LLM Analysis
+# Cost: ~5 API calls (local LLM), <10 seconds
+# Question: "What methods did the top killers use?"
+
+SELECT ?name ?method ?tool
+WHERE {
+    # Load CSV data
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:proven_victims ?victims .
+        ?row ex:notes ?notes .
+    }
+
+    # Filter for top killers only
+    FILTER(?victims > 150)
+
+    # Use LLM to extract structured methods
+    BIND(CONCAT(
+        "Extract the killing methods from this text. ",
+        "Return ONLY a JSON-LD object with this exact structure (no extra text): ",
+        "{",
+        "  \"@context\": \"https://schema.org/\",",
+        "  \"@type\": \"ItemList\",",
+        "  \"itemListElement\": [",
+        "    {",
+        "      \"@type\": \"ListItem\",",
+        "      \"name\": \"method name (e.g., strangulation)\",",
+        "      \"description\": \"tool or technique (e.g., hands, rope)\"",
+        "    }",
+        "  ]",
+        "}",
+        "\n\nText: ", SUBSTR(?notes, 1, 500)
+    ) AS ?prompt)
+
+    BIND(ggf:SLM-LLMGRAPH(?prompt) AS ?llmGraph)
+
+    GRAPH ?llmGraph {
+        ?list a schema:ItemList ;
+              schema:itemListElement ?item .
+        ?item a schema:ListItem ;
+              schema:name ?method .
+        OPTIONAL { ?item schema:description ?tool }
+    }
+}
+ORDER BY DESC(?victims) ?name
