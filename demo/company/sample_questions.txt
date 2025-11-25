@@ -1,0 +1,109 @@
+# Sample Questions for Multi-CSV Demo
+
+## Category 1: Single Source Queries (No JOIN needed)
+
+### Q1.1: Simple employee query
+What are the top 5 highest paid employees?
+Expected: Query employees.csv only, ORDER BY salary DESC, LIMIT 5
+
+### Q1.2: Simple department query
+Which department has the largest budget?
+Expected: Query departments.csv only, ORDER BY budget DESC, LIMIT 1
+
+### Q1.3: Employee filtering
+Show me all employees with performance rating above 4.5
+Expected: Query employees.csv only, FILTER performance_rating > 4.5
+
+---
+
+## Category 2: JOIN Queries (Multiple Sources)
+
+### Q2.1: Basic join
+Show employees in the Engineering department with their salaries
+Expected: JOIN employees + departments WHERE department_name = "Engineering"
+
+### Q2.2: Join with filtering
+Find employees with salary over 100000 in departments located in San Francisco
+Expected: JOIN employees + departments, FILTER salary and location
+
+### Q2.3: Manager lookup (self-join pattern)
+Show me all department managers with their employee details
+Expected: JOIN departments.manager_id = employees.employee_id
+
+---
+
+## Category 3: Aggregation with JOIN
+
+### Q3.1: Group by department
+What is the average salary in each department?
+Expected: JOIN + GROUP BY department_name + AVG(salary)
+
+### Q3.2: Count by department
+How many employees does each department have?
+Expected: JOIN + GROUP BY department_name + COUNT(*)
+
+### Q3.3: Complex aggregation
+Which departments have average salary above 90000 and more than 3 employees?
+Expected: JOIN + GROUP BY + HAVING AVG(salary) > 90000 AND COUNT > 3
+
+---
+
+## Category 4: UNION Queries (Combining Sources)
+
+### Q4.1: Union distinct values
+What are all the unique office locations across the company?
+Expected: UNION of locations from employees + departments
+
+### Q4.2: Union with labels
+List all locations and indicate if they're from employees or departments
+Expected: UNION with source label
+
+---
+
+## Category 5: Multi-Condition Cross-Source
+
+### Q5.1: Complex filtering
+Find high performers in well-funded departments
+Expected: JOIN with FILTER on performance_rating (employees) AND budget (departments)
+
+### Q5.2: Location-based join
+Show San Francisco employees with their department budgets
+Expected: JOIN + FILTER employees.location = "San Francisco", include budget from departments
+
+---
+
+## Category 6: Data Integration (LLM Knowledge Test)
+
+### Q6.1: Attribute source awareness
+Show employee names, their department names, and department budgets
+Expected: LLM must know names from employees, department_name from departments, budget from departments
+
+### Q6.2: Smart filtering
+Find employees in high-budget departments (over 1 million)
+Expected: LLM must know budget is in departments.csv, need JOIN
+
+### Q6.3: Mixed attributes
+List employees with their positions, salaries, and the floor their department is on
+Expected: position + salary from employees, floor from departments via JOIN
+
+---
+
+## Quick Test Commands
+
+Test Q1 (Single source):
+What are the top 5 highest paid employees?
+
+Test Q2 (JOIN):
+Show employees in the Engineering department with their salaries
+
+Test Q3 (Aggregation):
+What is the average salary in each department?
+
+Test Q4 (UNION):
+What are all the unique office locations?
+
+Test Q5 (Complex):
+Find employees with performance rating above 4.5 in departments with budget over 1.5 million
+
+Test Q6 (Integration):
+Show employee names, department names, and department budgets for all employees in San Francisco

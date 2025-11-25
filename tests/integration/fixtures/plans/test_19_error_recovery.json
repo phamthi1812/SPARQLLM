@@ -1,0 +1,46 @@
+{
+  "test_id": "test_19",
+  "name": "Error recovery - missing file",
+  "description": "Gracefully handle missing files with OPTIONAL pattern",
+  "question": "List files and optionally read their content (some may not exist)",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READDIR",
+          "args": {
+            "path": "./tests/integration/fixtures/data"
+          }
+        },
+        "bindings": {
+          "fileUri": "?fileUri"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READFILE",
+          "args": {
+            "file": "?fileUri"
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "content": "?content"
+        },
+        "optional": true
+      }
+    ],
+    "output": {
+      "variables": ["fileUri", "content"]
+    }
+  },
+  "expected_bindings": ["fileUri"],
+  "optional_bindings": ["content"],
+  "min_results": 1,
+  "expect_partial_failure": true
+}

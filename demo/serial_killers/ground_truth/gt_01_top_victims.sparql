@@ -1,0 +1,30 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Ground Truth Query 1: Top 10 serial killers with most victims
+# Question: "Who are the top 10 serial killers with the most victims?"
+# Expected: 10 rows ordered by victim_max DESC
+# Category: Pure CSV
+
+SELECT ?name ?country ?victim_min ?victim_max
+WHERE {
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:victim_max ?victim_max .
+    }
+
+    # Optional columns
+    OPTIONAL {
+        GRAPH ?csvGraph {
+            ?row ex:country ?country .
+            ?row ex:victim_min ?victim_min .
+        }
+    }
+
+    # Filter out null victim_max
+    FILTER(BOUND(?victim_max))
+}
+ORDER BY DESC(?victim_max)
+LIMIT 10

@@ -1,0 +1,7 @@
+department_id,department_name,location,budget,manager_id,established_year,floor,building,description
+D01,Engineering,San Francisco,2500000,E022,2010,3,Main Campus,"Responsible for all software development, infrastructure, and technical innovation. Builds and maintains company's core products."
+D02,Marketing,New York,1200000,E003,2012,5,East Tower,"Handles brand strategy, digital marketing, content creation, and customer acquisition campaigns."
+D03,Finance,Chicago,800000,E023,2008,2,Financial Center,"Manages company finances, accounting, budgeting, financial planning, and investor relations."
+D04,Human Resources,New York,650000,E028,2011,4,East Tower,"Oversees recruitment, employee relations, benefits administration, and organizational development."
+D05,Sales,Boston,1800000,E012,2009,1,Sales Hub,"Drives revenue through direct sales, account management, and business development initiatives."
+D06,Operations,Seattle,950000,E017,2015,2,West Building,"Manages supply chain, logistics, facilities, and operational efficiency across the organization."

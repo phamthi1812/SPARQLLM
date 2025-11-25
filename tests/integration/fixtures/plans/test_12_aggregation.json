@@ -1,0 +1,31 @@
+{
+  "test_id": "test_12",
+  "name": "Aggregation operations",
+  "description": "Simple CSV read with all population data",
+  "question": "What are all the city populations in the CSV?",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-CSV",
+          "args": {
+            "file": "./tests/integration/fixtures/data/cities.csv"
+          }
+        },
+        "bindings": {
+          "city": "?city",
+          "population": "?population"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["city", "population"]
+    }
+  },
+  "expected_bindings": ["city", "population"],
+  "min_results": 1,
+  "note": "Aggregation would be done in SPARQL SELECT clause, not in logical plan"
+}

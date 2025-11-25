@@ -1,0 +1,30 @@
+{
+  "test_id": "test_01",
+  "name": "Simple filesystem - list directory",
+  "description": "List all files in the data directory",
+  "question": "List all files in the ./data directory",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READDIR",
+          "args": {
+            "path": "./data"
+          }
+        },
+        "bindings": {
+          "fileUri": "?fileUri",
+          "fileName": "?fileName"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["fileUri", "fileName"]
+    }
+  },
+  "expected_bindings": ["fileUri", "fileName"],
+  "min_results": 1
+}

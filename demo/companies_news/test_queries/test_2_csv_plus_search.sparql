@@ -1,0 +1,27 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <https://schema.org/>
+
+# Test 2: CSV + SEARCH
+# Load company from CSV, then search for news
+
+SELECT ?company_name ?news_title ?news_url WHERE {
+    # Get OpenAI from CSV
+    BIND(ggf:SLM-CSV("./demo/companies_news/data/companies.csv") AS ?csvGraph)
+    GRAPH ?csvGraph {
+        ?row ex:company_name ?company_name .
+    }
+    FILTER(?company_name = "OpenAI")
+
+    # Search for news
+    BIND(CONCAT(?company_name, " latest developments 2024") AS ?search_query)
+    BIND(ggf:SEARCH(?search_query) AS ?webGraph)
+
+    GRAPH ?webGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?news_title .
+        BIND(?item AS ?news_url)
+    }
+}
+LIMIT 5

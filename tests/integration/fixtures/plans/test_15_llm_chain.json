@@ -1,0 +1,58 @@
+{
+  "test_id": "test_15",
+  "name": "LLM chaining",
+  "description": "Chain multiple LLM calls (extract then summarize)",
+  "question": "Extract entities from text, then generate a summary of the entities",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READFILE",
+          "args": {
+            "file": "./tests/integration/fixtures/data/article.txt"
+          }
+        },
+        "bindings": {
+          "text": "?text"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "llm_extract",
+        "ggf": {
+          "name": "LLM",
+          "args": {
+            "prompt": "Extract all person names and organizations from this text as JSON: ?text"
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "entities": "?entities"
+        }
+      },
+      {
+        "id": "step3",
+        "operation": "llm_extract",
+        "ggf": {
+          "name": "LLM",
+          "args": {
+            "prompt": "Summarize these entities in one sentence: ?entities"
+          }
+        },
+        "depends_on": ["step2"],
+        "bindings": {
+          "summary": "?summary"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["entities", "summary"]
+    }
+  },
+  "expected_bindings": ["entities", "summary"],
+  "min_results": 1,
+  "requires_llm": true
+}

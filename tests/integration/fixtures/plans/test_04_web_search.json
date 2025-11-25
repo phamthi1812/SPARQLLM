@@ -1,0 +1,33 @@
+{
+  "test_id": "test_04",
+  "name": "Web search query",
+  "description": "Search the web for information using DuckDuckGo",
+  "question": "Search for 'SPARQL optimization techniques'",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "web_search",
+        "ggf": {
+          "name": "SEARCH",
+          "args": {
+            "query": "SPARQL optimization techniques"
+          }
+        },
+        "bindings": {
+          "title": "?title",
+          "url": "?url",
+          "snippet": "?snippet"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["title", "url", "snippet"],
+      "limit": 5
+    }
+  },
+  "expected_bindings": ["title", "url", "snippet"],
+  "min_results": 1,
+  "requires_network": true
+}

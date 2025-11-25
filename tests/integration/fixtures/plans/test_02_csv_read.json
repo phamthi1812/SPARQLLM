@@ -1,0 +1,36 @@
+{
+  "test_id": "test_02",
+  "name": "CSV read and parse",
+  "description": "Read and parse a CSV file to extract structured data",
+  "question": "What are the cities and populations in cities.csv?",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-CSV",
+          "args": {
+            "file": "./tests/integration/fixtures/data/cities.csv"
+          }
+        },
+        "bindings": {
+          "city": "?city",
+          "population": "?population"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["city", "population"],
+      "order_by": [
+        {
+          "variable": "population",
+          "order": "DESC"
+        }
+      ]
+    }
+  },
+  "expected_bindings": ["city", "population"],
+  "min_results": 1
+}

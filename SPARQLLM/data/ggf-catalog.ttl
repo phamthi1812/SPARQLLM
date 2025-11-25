@@ -1,0 +1,386 @@
+@prefix ggf: <http://ggf.org/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+ggf:GITHUB a ggf:GraphGeneratingFunction ;
+    rdfs:label "GITHUB" ;
+    ggf:accessesDataSource "web" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 800.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.github_api_call.github_api_call" ;
+    ggf:requiresNetwork true .
+
+ggf:LLM a ggf:GraphGeneratingFunction ;
+    rdfs:label "LLM" ;
+    ggf:accessesDataSource "llm",
+        "mcp" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1000.0 ;
+    ggf:description "ggf:LLM(prompt, model [, temperature]) -> graph node (BNode or URIRef)" ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.mcp.alias._alias_llm" ;
+    ggf:requiresNetwork true .
+
+ggf:LLM_GROQ a ggf:GraphGeneratingFunction ;
+    rdfs:label "LLM_GROQ" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmgraph_groq.llm_graph_groq" ;
+    ggf:requiresNetwork true .
+
+ggf:LOAD a ggf:GraphGeneratingFunction ;
+    rdfs:label "LOAD" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Load an RDF file from a local filesystem path into the global store and" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.read_rdf.load_rdf_file" ;
+    ggf:requiresNetwork false .
+
+ggf:MCP-TOOL a ggf:GraphGeneratingFunction ;
+    rdfs:label "MCP-TOOL" ;
+    ggf:accessesDataSource "mcp" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 1000.0 ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.mcp.slm_mcp_tool.slm_mcp_tool" ;
+    ggf:requiresNetwork true .
+
+ggf:OBJ a ggf:GraphGeneratingFunction ;
+    rdfs:label "OBJ" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Graph Generating Function: OBJ" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.json_helpers.OBJ" ;
+    ggf:requiresNetwork false .
+
+ggf:PRINT a ggf:GraphGeneratingFunction ;
+    rdfs:label "PRINT" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "UDF: PRINT(?value)" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.print.PRINT" ;
+    ggf:requiresNetwork false .
+
+ggf:RECURSE-UPDATE a ggf:GraphGeneratingFunction ;
+    rdfs:label "RECURSE-UPDATE" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "Graph Generating Function: recurse_update" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.recurse_update.recurse_update" ;
+    ggf:requiresNetwork false .
+
+ggf:SEARCH a ggf:GraphGeneratingFunction ;
+    rdfs:label "SEARCH" ;
+    ggf:accessesDataSource "llm",
+        "mcp" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1000.0 ;
+    ggf:description "ggf:SEARCH(query [, limit [, region [, safesearch]]]) -> graph node for DuckDuckGo search" ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.mcp.alias._alias_ddg_search" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-BFS a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-BFS" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "SLM-BFS(start, goal, pred, ginit) -> graph (named) contenant un chemin ordonné s -> ... -> t." ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.BFS.slm_bfs" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-BS4 a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-BS4" ;
+    ggf:accessesDataSource "web" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 800.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.bs4.BS4" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-CONSTRUCT a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-CONSTRUCT" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "Not really a construct," ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.slm_construct.slm_construct" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-CSV a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-CSV" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Graph Generating Function: slm_csv" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.mycsv.slm_csv" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-CYPHER a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-CYPHER" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "GGF: SLM-CYPHER(ginit, cypher, prefixes) -> graphe nommé avec lignes slm:Row" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.cypher.slm_cypher" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-FILE a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-FILE" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Graph Generating Function: absPath" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.absPath.absPath" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-GETTEXT a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-GETTEXT" ;
+    ggf:accessesDataSource "web" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 800.0 ;
+    ggf:description "Graph Generating Function: GETTEXT" ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.uri2text.GETTEXT" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-GITHUB a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-GITHUB" ;
+    ggf:accessesDataSource "web" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 800.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.github_api_call.github_api_call" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-GRAPH a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-GRAPH" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "Graph Generating Function: slm_graph" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.slm_graph.slm_graph" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-LLM a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-LLM" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:description "Graph Generating Function: llmollama_text" ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmollama_text.llmollama_text" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-LLMGRAPH a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-LLMGRAPH" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:description "Processes a given prompt using the OLLAMA API and updates a named graph with the response." ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmgraph_ollama.LLMGRAPH_OLLAMA" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-LLMGRAPH_GROQ a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-LLMGRAPH_GROQ" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmgraph_groq.llm_graph_groq" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-LLMGRAPH_GROQM a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-LLMGRAPH_GROQM" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmgraph_groq.llm_graph_groq_model" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-LLMGRAPH_MISTRAL a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-LLMGRAPH_MISTRAL" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmgraph_mistral.llm_graph_mistral" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-LLMGRAPH_OLLA a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-LLMGRAPH_OLLA" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:description "Processes a given prompt using the OLLAMA API and updates a named graph with the response." ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmgraph_ollama.LLMGRAPH_OLLAMA" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-LLMGRAPH_OPENAI a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-LLMGRAPH_OPENAI" ;
+    ggf:accessesDataSource "llm" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1500.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.llmgraph_openai.llm_graph_openai" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-MCP-TOOL a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-MCP-TOOL" ;
+    ggf:accessesDataSource "mcp" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 1000.0 ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.mcp.slm_mcp_tool.slm_mcp_tool" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-MERGE a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-MERGE" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "Graph Generating Function: slm_merge" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.slm_merge.slm_merge" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-OBJ a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-OBJ" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Graph Generating Function: OBJ" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.json_helpers.OBJ" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-PRINT a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-PRINT" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "UDF: PRINT(?value)" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.print.PRINT" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-RDF a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-RDF" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Graph Generating Function: read_rdf" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.read_rdf.read_rdf" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-READDIR a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-READDIR" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Graph Generating Function: RDIR" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.readdir.RDIR" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-READFILE a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-READFILE" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:description "Graph Generating Function: readhtmlfile" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.readfile.readhtmlfile" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-READHTMLFILE a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-READHTMLFILE" ;
+    ggf:accessesDataSource "filesystem" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 50.0 ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.readfile.readhtmlfile" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-RECURSE a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-RECURSE" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "Graph Generating Function: recurse" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.recurse.recurse" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-RECURSE-UPDATE a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-RECURSE-UPDATE" ;
+    ggf:accessesDataSource "graph" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 100.0 ;
+    ggf:description "Graph Generating Function: recurse_update" ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.recurse_update.recurse_update" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-SEARCH a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-SEARCH" ;
+    ggf:accessesDataSource "web" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 800.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.search_whoosh.searchWhoosh" ;
+    ggf:requiresNetwork true .
+
+ggf:SLM-SEARCH-FAISS a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-SEARCH-FAISS" ;
+    ggf:accessesDataSource "vector" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 200.0 ;
+    ggf:deterministic true ;
+    ggf:modulePath "SPARQLLM.udf.search_faiss.search_faiss" ;
+    ggf:requiresNetwork false .
+
+ggf:SLM-SEARCH-WHOOSH a ggf:GraphGeneratingFunction ;
+    rdfs:label "SLM-SEARCH-WHOOSH" ;
+    ggf:accessesDataSource "web" ;
+    ggf:cacheable true ;
+    ggf:costLatencyMs 800.0 ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.search_whoosh.searchWhoosh" ;
+    ggf:requiresNetwork true .
+
+ggf:SNAP a ggf:GraphGeneratingFunction ;
+    rdfs:label "SNAP" ;
+    ggf:accessesDataSource "llm",
+        "mcp" ;
+    ggf:cacheable false ;
+    ggf:costLatencyMs 1000.0 ;
+    ggf:description "ggf:SNAP(url [, text_max]) -> graph node for browser snapshot" ;
+    ggf:deterministic false ;
+    ggf:modulePath "SPARQLLM.udf.mcp.alias._alias_snapshot" ;
+    ggf:requiresNetwork true .
+
+ggf:catalog ggf:catalogVersion "1.0.0" ;
+    ggf:generatedAt "2025-11-23T21:29:50.515850"^^xsd:dateTime .
+

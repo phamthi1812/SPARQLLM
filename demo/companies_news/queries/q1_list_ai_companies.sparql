@@ -1,0 +1,20 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Q1: List all AI companies (CSV only)
+# Question: "List all companies in the Artificial Intelligence sector"
+
+SELECT ?company_name ?headquarters ?founded ?ceo WHERE {
+    BIND(ggf:SLM-CSV("./demo/companies_news/data/companies.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:company_name ?company_name .
+        ?row ex:sector ?sector .
+        ?row ex:headquarters ?headquarters .
+        ?row ex:founded ?founded .
+        ?row ex:ceo ?ceo .
+    }
+
+    FILTER(?sector = "Artificial Intelligence")
+}
+ORDER BY ?founded

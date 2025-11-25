@@ -1,0 +1,28 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <https://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT DISTINCT ?result WHERE {
+    BIND(ggf:SEARCH("Find restaurants near Campus Lombarderie - Site de Nantes 2, rue de la Houssinière - BP 92208 44322 Nantes Cedex 3", 5) AS ?step1Graph)
+
+    BIND(ggf:SEARCH("Find restaurants near Campus Lombarderie - Site de Nantes 2, rue de la Houssinière - BP 92208 44322 Nantes Cedex 3", 5) AS ?step2Graph)
+
+    BIND(ggf:SEARCH("Find restaurants near Campus Lombarderie - Site de Nantes 2, rue de la Houssinière - BP 92208 44322 Nantes Cedex 3", 5) AS ?step3Graph)
+
+    GRAPH ?step1Graph {
+            ?result schema:name ?title .
+            ?result schema:url ?url .
+        }
+
+    GRAPH ?step2Graph {
+            ?result schema:name ?title .
+            ?result schema:url ?url .
+        }
+
+    GRAPH ?step3Graph {
+            ?result schema:name ?title .
+            ?result schema:url ?url .
+        }
+}

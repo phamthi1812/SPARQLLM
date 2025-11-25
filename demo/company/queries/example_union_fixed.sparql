@@ -1,0 +1,22 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Corrected UNION query - shows all unique office locations
+# Fixed: Added inner braces around each UNION pattern
+
+SELECT DISTINCT ?location WHERE {
+    {
+        BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+        GRAPH ?empGraph {
+            ?row ex:location ?location .
+        }
+    }
+    UNION
+    {
+        BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+        GRAPH ?deptGraph {
+            ?row ex:location ?location .
+        }
+    }
+}
+ORDER BY ?location

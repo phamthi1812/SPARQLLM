@@ -1,0 +1,35 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Q2: Calculate salary statistics by department (JOIN + AGGREGATION)
+# This shows how to aggregate data from employees.csv grouped by department info from departments.csv
+
+SELECT ?department_name ?dept_location
+       (COUNT(?employee_name) AS ?num_employees)
+       (AVG(?salary) AS ?avg_salary)
+       (MIN(?salary) AS ?min_salary)
+       (MAX(?salary) AS ?max_salary)
+       (SUM(?salary) AS ?total_payroll)
+       ?dept_budget
+WHERE {
+    # Load both CSV files
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    # Get employee data
+    GRAPH ?empGraph {
+        ?emp ex:name ?employee_name .
+        ?emp ex:salary ?salary .
+        ?emp ex:department_id ?dept_id .
+    }
+
+    # Join with department data
+    GRAPH ?deptGraph {
+        ?dept ex:department_id ?dept_id .
+        ?dept ex:department_name ?department_name .
+        ?dept ex:location ?dept_location .
+        ?dept ex:budget ?dept_budget .
+    }
+}
+GROUP BY ?department_name ?dept_location ?dept_budget
+ORDER BY DESC(?avg_salary)

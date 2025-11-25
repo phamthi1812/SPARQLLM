@@ -1,0 +1,47 @@
+{
+  "test_id": "test_07",
+  "name": "Hybrid web + LLM",
+  "description": "Search web and summarize results with LLM",
+  "question": "Search for 'RDF databases' and summarize the top result",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "web_search",
+        "ggf": {
+          "name": "SEARCH",
+          "args": {
+            "query": "RDF databases"
+          }
+        },
+        "bindings": {
+          "url": "?url",
+          "snippet": "?snippet"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "llm_extract",
+        "ggf": {
+          "name": "LLM",
+          "args": {
+            "prompt": "Summarize this search result in one sentence: ?snippet"
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "summary": "?summary"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["url", "summary"],
+      "limit": 1
+    }
+  },
+  "expected_bindings": ["url", "summary"],
+  "min_results": 1,
+  "requires_llm": true,
+  "requires_network": true
+}

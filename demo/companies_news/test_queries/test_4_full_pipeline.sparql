@@ -1,0 +1,48 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <https://schema.org/>
+
+# Test 4: Full Pipeline - CSV + SEARCH + LLM (Local)
+# Load AI companies, search news, extract with local LLM
+
+SELECT ?company_name ?news_title ?extracted_info WHERE {
+    # Get AI companies from CSV
+    {
+        SELECT ?company_name WHERE {
+            BIND(ggf:SLM-CSV("./demo/companies_news/data/companies.csv") AS ?csvGraph)
+            GRAPH ?csvGraph {
+                ?row ex:company_name ?company_name .
+                ?row ex:sector ?sector .
+            }
+            FILTER(?sector = "Artificial Intelligence")
+        }
+        LIMIT 1  # Only 1 company for testing
+    }
+
+    # Search for recent news
+    BIND(CONCAT(?company_name, " artificial intelligence 2024") AS ?search_query)
+    BIND(ggf:SEARCH(?search_query) AS ?webGraph)
+
+    GRAPH ?webGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?news_title .
+        ?item schema:description ?snippet .
+    }
+
+    # Extract info using LOCAL Ollama LLM
+    BIND(CONCAT(
+        "Extract AI model information from: ",
+        SUBSTR(?snippet, 1, 400),
+        ". Return JSON-LD: {\"@context\": \"http://schema.org/\", ",
+        "\"@type\": \"SoftwareApplication\", ",
+        "\"name\": \"model name\", ",
+        "\"description\": \"what it does\"}"
+    ) AS ?llm_prompt)
+
+    BIND(ggf:SLM-LLMGRAPH(?llm_prompt) AS ?llmGraph)
+    GRAPH ?llmGraph {
+        ?entity schema:description ?extracted_info .
+    }
+}
+LIMIT 3

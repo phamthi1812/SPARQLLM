@@ -1,0 +1,48 @@
+{
+  "test_id": "test_20",
+  "name": "Performance stress test",
+  "description": "Large result set with multiple data sources",
+  "question": "Load both cities and countries CSV files",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-CSV",
+          "args": {
+            "file": "./tests/integration/fixtures/data/cities.csv"
+          }
+        },
+        "bindings": {
+          "city": "?city",
+          "population": "?population",
+          "country": "?country"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-CSV",
+          "args": {
+            "file": "./tests/integration/fixtures/data/countries.csv"
+          }
+        },
+        "bindings": {
+          "countryName": "?countryName",
+          "capital": "?capital",
+          "area": "?area"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["city", "population", "country", "countryName", "capital", "area"],
+      "limit": 10
+    }
+  },
+  "expected_bindings": ["city", "country"],
+  "min_results": 1,
+  "performance_test": true
+}

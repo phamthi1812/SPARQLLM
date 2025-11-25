@@ -1,0 +1,271 @@
+# Companies + Web News Schema
+
+## Available Data Sources
+
+### 1. companies.csv (Local Data)
+**Path:** ./demo/companies_news/data/companies.csv
+**Description:** Tech companies with basic information
+**Columns:**
+- company_name (string): Official company name
+- sector (string): Industry sector
+- headquarters (string): City where company is headquartered
+- founded (integer): Year company was founded
+- ceo (string): Current CEO name
+- description (string): Brief company description
+- website (string): Company website
+
+**Row Count:** 15 companies
+
+**IMPORTANT - Actual Sector Values in the CSV:**
+- "Artificial Intelligence" (2 companies: OpenAI, Anthropic)
+- "Technology" (2 companies: Google, Microsoft)
+- "Social Media" (1 company: Meta)
+- "E-commerce" (1 company: Amazon)
+- "Automotive" (1 company: Tesla)
+- "Semiconductors" (1 company: NVIDIA)
+- "Consumer Electronics" (1 company: Apple)
+- "Enterprise Software" (1 company: Salesforce)
+- "Aerospace" (1 company: SpaceX)
+- "Streaming" (1 company: Netflix)
+- "Transportation" (1 company: Uber)
+- "Hospitality" (1 company: Airbnb)
+- "Financial Technology" (1 company: Stripe)
+
+**Companies:** OpenAI, Anthropic, Google, Microsoft, Meta, Amazon, Tesla, NVIDIA, Apple, Salesforce, SpaceX, Netflix, Uber, Airbnb, Stripe
+
+---
+
+### 2. Web Search (Live Data)
+**GGF:** `SEARCH(query_string)` or `ggf:SEARCH(query_string)`
+**Description:** Searches the web (DuckDuckGo) and returns results as RDF graph
+**Returns:** Search results with title, url, snippet
+
+**RDF Structure:** Results are nested: DataFeed → dataFeedElement → item (WebPage)
+
+**Example:**
+```sparql
+BIND(ggf:SEARCH("OpenAI latest news 2024") AS ?webGraph)
+GRAPH ?webGraph {
+    ?feed schema:dataFeedElement ?feedItem .
+    ?feedItem schema:item ?item .
+    ?item schema:name ?title .
+    ?item schema:description ?snippet .
+    BIND(?item AS ?url)
+}
+```
+
+**IMPORTANT:** Use `PREFIX schema: <https://schema.org/>` (with https!)
+
+---
+
+### 3. LLM Extraction (Unstructured → Structured)
+**Available GGFs:**
+- `SLM-LLMGRAPH(prompt)` - Default Ollama (local, free, slower)
+- `SLM-LLMGRAPH_GROQ(prompt)` - Groq (fast, free tier, **RECOMMENDED**)
+- `SLM-LLMGRAPH_OPENAI(prompt)` - OpenAI (paid, high quality)
+
+**Description:** Uses LLM to extract structured information from text
+**Returns:** RDF graph with extracted data
+
+**Example:**
+```sparql
+BIND(CONCAT(
+    "Extract key information from this news snippet: ",
+    ?snippet,
+    ". Return JSON-LD with: product launches, funding, partnerships."
+) AS ?prompt)
+
+BIND(ggf:SLM-LLMGRAPH_GROQ(?prompt) AS ?llmGraph)
+GRAPH ?llmGraph {
+    ?entity schema:description ?info .
+}
+```
+
+---
+
+## Query Patterns
+
+### Pattern 1: CSV Only
+**Use Case:** "List all AI companies founded after 2020"
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+SELECT ?company_name ?sector ?founded WHERE {
+    BIND(ggf:SLM-CSV("./demo/companies_news/data/companies.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:company_name ?company_name .
+        ?row ex:sector ?sector .
+        ?row ex:founded ?founded .
+    }
+
+    FILTER(?sector = "Artificial Intelligence" && ?founded > 2020)
+}
+ORDER BY ?founded
+```
+
+---
+
+### Pattern 2: CSV + Web Search
+**Use Case:** "Search for recent news about OpenAI"
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <https://schema.org/>
+
+SELECT ?company_name ?news_title ?news_url WHERE {
+    # Get company from CSV
+    BIND(ggf:SLM-CSV("./demo/companies_news/data/companies.csv") AS ?csvGraph)
+    GRAPH ?csvGraph {
+        ?row ex:company_name ?company_name .
+    }
+    FILTER(?company_name = "OpenAI")
+
+    # Build search query
+    BIND(CONCAT(?company_name, " latest news 2024") AS ?search_query)
+
+    # Search web using SEARCH function
+    BIND(ggf:SEARCH(?search_query) AS ?webGraph)
+    GRAPH ?webGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?news_title .
+        BIND(?item AS ?news_url)
+    }
+}
+LIMIT 5
+```
+
+---
+
+### Pattern 3: CSV + Web Search + LLM Extraction
+**Use Case:** "Find recent funding news for AI companies"
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <https://schema.org/>
+
+SELECT ?company_name ?news_snippet ?extracted_info WHERE {
+    # Get AI companies from CSV
+    {
+        SELECT ?company_name WHERE {
+            BIND(ggf:SLM-CSV("./demo/companies_news/data/companies.csv") AS ?csvGraph)
+            GRAPH ?csvGraph {
+                ?row ex:company_name ?company_name .
+                ?row ex:sector ?sector .
+            }
+            FILTER(?sector = "Artificial Intelligence")
+        }
+        LIMIT 3  # Limit to reduce API calls
+    }
+
+    # Search for funding news
+    BIND(CONCAT(?company_name, " funding news 2024") AS ?search_query)
+    BIND(ggf:SEARCH(?search_query) AS ?webGraph)
+
+    GRAPH ?webGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:description ?news_snippet .
+    }
+
+    # Extract structured info using LLM (use SLM-LLMGRAPH_GROQ for speed)
+    BIND(CONCAT(
+        "Extract funding information from this text: ",
+        SUBSTR(?news_snippet, 1, 500),
+        ". Return JSON-LD: {\"@context\": \"http://schema.org/\", ",
+        "\"@type\": \"MonetaryAmount\", ",
+        "\"amount\": \"amount in millions\", ",
+        "\"description\": \"brief summary\"}"
+    ) AS ?llm_prompt)
+
+    BIND(ggf:SLM-LLMGRAPH_GROQ(?llm_prompt) AS ?llmGraph)
+    GRAPH ?llmGraph {
+        ?funding schema:description ?extracted_info .
+    }
+}
+LIMIT 10
+```
+
+---
+
+## Multi-Source Integration Rules
+
+### ⚠️ CRITICAL: Always Use Subqueries for Filtering!
+
+**PROBLEM:** Without subquery, SPARQL will execute web search/LLM for ALL rows, then filter!
+
+**WRONG** (searches all 15 companies, then filters to Tesla):
+```sparql
+SELECT ?company ?news WHERE {
+    BIND(ggf:SLM-CSV("companies.csv") AS ?g)
+    GRAPH ?g { ?row ex:company_name ?company . }
+    FILTER(?company = "Tesla")  # ← TOO LATE!
+
+    BIND(ggf:SEARCH(CONCAT(?company, " news")) AS ?web)  # ← Already searched ALL!
+}
+```
+**Result:** 15 web searches (15-30 seconds) ❌
+
+**CORRECT** (filters to Tesla first, then searches only Tesla):
+```sparql
+SELECT ?company ?news WHERE {
+    {  # ← Subquery filters FIRST
+        SELECT ?company WHERE {
+            BIND(ggf:SLM-CSV("companies.csv") AS ?g)
+            GRAPH ?g { ?row ex:company_name ?company . }
+            FILTER(?company = "Tesla")
+        }
+    }
+
+    BIND(ggf:SEARCH(CONCAT(?company, " news")) AS ?web)  # ← Only 1 search!
+}
+```
+**Result:** 1 web search (1-2 seconds) ✅
+
+### Other Rules
+
+1. **CSV first, then web**: Load companies from CSV, then search for each
+2. **Use LIMIT with LLM calls**: Web search + LLM is expensive, limit results
+3. **ALWAYS use subquery for filtering**: Filter CSV data in subquery BEFORE SEARCH/LLM
+4. **SUBSTR for LLM input**: Truncate long text to save tokens
+5. **JSON-LD prompt**: Tell LLM to return structured JSON-LD format
+
+---
+
+## Important Notes
+
+### Performance Optimization
+- ⚠️ **Web search is slow** (1-2 seconds per query)
+- ⚠️ **LLM extraction is slow** (2-5 seconds per call)
+- ✅ **Use LIMIT** to reduce number of searches
+- ✅ **Filter CSV first** before searching
+- ✅ **Truncate text** before sending to LLM
+
+### Cost Considerations
+- Web search: Usually free (DuckDuckGo, Google)
+- LLM extraction: Free (Ollama) or paid (Groq/OpenAI)
+- Recommendation: Use Groq for faster, free LLM extraction
+
+---
+
+## Example Questions
+
+**Simple CSV:**
+- "List all AI companies"
+- "Which companies are based in San Francisco?"
+- "Show companies founded after 2010"
+
+**CSV + Web:**
+- "Search for recent news about OpenAI"
+- "Find articles about Tesla in 2024"
+- "Get latest information on NVIDIA"
+
+**CSV + Web + LLM:**
+- "What recent funding have AI companies received?"
+- "Find product launches from tech companies in 2024"
+- "Extract recent partnerships for cloud companies"

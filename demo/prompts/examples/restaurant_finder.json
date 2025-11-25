@@ -1,0 +1,144 @@
+{
+  "description": "Multi-step query to find cheap restaurants near Web Conference 2024",
+  "question": "Find cheap restaurants near the Web Conference 2024",
+  "complexity": "high",
+  "estimated_steps": 6,
+  "estimated_llm_calls": 2,
+  "estimated_web_requests": 7,
+  "estimated_time_seconds": 15,
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "web_search",
+        "description": "Search for Web Conference 2024 to find official website",
+        "ggf": {
+          "name": "SEARCH",
+          "args": {
+            "query": "Web Conference 2024 location",
+            "limit": 2
+          }
+        },
+        "bindings": {
+          "url": "?confUrl",
+          "title": "?confTitle"
+        },
+        "expected_output": "URLs of conference websites"
+      },
+      {
+        "id": "step2",
+        "operation": "web_fetch",
+        "description": "Fetch conference website content to extract location",
+        "ggf": {
+          "name": "SNAP",
+          "args": {
+            "url": "?confUrl",
+            "wait_ms": 2000,
+            "snippet_only": true
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "text": "?confText"
+        },
+        "expected_output": "Text content from conference website"
+      },
+      {
+        "id": "step3",
+        "operation": "llm_extract",
+        "description": "Use LLM to extract city/country from conference website",
+        "ggf": {
+          "name": "LLM",
+          "args": {
+            "prompt": "CONCAT('Extract only the city and country where this conference is held (format: city, country): ', ?confText)"
+          }
+        },
+        "depends_on": ["step2"],
+        "bindings": {
+          "location": "?location"
+        },
+        "expected_output": "Location string like 'Paris, France' or 'Singapore'",
+        "cost_note": "LLM call - expensive (~1.5s, $0.01-0.03)"
+      },
+      {
+        "id": "step4",
+        "operation": "web_search",
+        "description": "Search for cheap restaurants using extracted location",
+        "ggf": {
+          "name": "SEARCH",
+          "args": {
+            "query": "CONCAT('cheap restaurants near ', ?location)",
+            "limit": 5
+          }
+        },
+        "depends_on": ["step3"],
+        "bindings": {
+          "url": "?restUrl",
+          "title": "?restName"
+        },
+        "expected_output": "URLs of restaurant pages/listings"
+      },
+      {
+        "id": "step5",
+        "operation": "web_fetch",
+        "description": "Fetch restaurant pages to get menu/price information",
+        "ggf": {
+          "name": "SNAP",
+          "args": {
+            "url": "?restUrl",
+            "wait_ms": 3000,
+            "snippet_only": true
+          }
+        },
+        "depends_on": ["step4"],
+        "bindings": {
+          "text": "?menuText"
+        },
+        "expected_output": "Text content from restaurant pages (up to 5 pages)"
+      },
+      {
+        "id": "step6",
+        "operation": "llm_extract",
+        "description": "Extract average price from menu text using LLM",
+        "ggf": {
+          "name": "LLM",
+          "args": {
+            "prompt": "CONCAT('Extract average menu price range from this restaurant page (return just a number like 15 or 25, estimate if needed): ', ?menuText)"
+          }
+        },
+        "depends_on": ["step5"],
+        "bindings": {
+          "avgPrice": "?avgPrice"
+        },
+        "expected_output": "Numeric price estimates",
+        "cost_note": "LLM call - expensive, called once per restaurant (~7.5s total for 5 restaurants)"
+      }
+    ],
+    "output": {
+      "variables": ["restName", "avgPrice", "restUrl"],
+      "order_by": [
+        {
+          "variable": "avgPrice",
+          "order": "ASC"
+        }
+      ],
+      "limit": 5,
+      "description": "Top 5 cheapest restaurants near the conference"
+    }
+  },
+  "expected_sparql_pattern": "Uses BIND to create graphs, GRAPH clauses to query them, nested dependencies with topological sorting",
+  "notes": [
+    "This demonstrates the full multi-step pattern: web search → fetch → LLM extract → search again → fetch → LLM extract",
+    "Variable passing via CONCAT is critical for steps 4 and 6",
+    "Cost-conscious: only 2 LLM calls (step 3 once, step 6 up to 5 times)",
+    "Uses LIMIT throughout to control processing volume",
+    "Step dependencies ensure correct execution order"
+  ],
+  "alternative_approaches": [
+    "Could add step 0 to check if location is already known (vector search local knowledge)",
+    "Could add geocoding step for more precise 'near' calculation",
+    "Could batch LLM calls in step 6 to reduce latency",
+    "Could add price validation/normalization step"
+  ]
+}

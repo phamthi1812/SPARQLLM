@@ -1,0 +1,22 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Ground Truth Query 2: Count serial killers by decade
+# Question: "How many serial killers operated in each decade?"
+# Expected: Rows with decade and count, ordered by decade
+# Category: Pure CSV (GROUP BY)
+
+SELECT ?decade (COUNT(?name) AS ?count)
+WHERE {
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:decade ?decade .
+    }
+
+    # Filter out null decades
+    FILTER(BOUND(?decade))
+}
+GROUP BY ?decade
+ORDER BY ?decade

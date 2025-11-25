@@ -1,0 +1,31 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Example: JOIN employees with departments
+# Question: "Show employees in the Engineering department with their salaries"
+
+SELECT ?employee_name ?salary ?position ?department_name ?dept_budget
+WHERE {
+    # Load both CSV files
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    # Get employee data
+    GRAPH ?empGraph {
+        ?emp ex:name ?employee_name .
+        ?emp ex:salary ?salary .
+        ?emp ex:position ?position .
+        ?emp ex:department_id ?dept_id .
+    }
+
+    # JOIN with department data on department_id
+    GRAPH ?deptGraph {
+        ?dept ex:department_id ?dept_id .
+        ?dept ex:department_name ?department_name .
+        ?dept ex:budget ?dept_budget .
+    }
+
+    # Filter for Engineering department
+    FILTER(?department_name = "Engineering")
+}
+ORDER BY DESC(?salary)

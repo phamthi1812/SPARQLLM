@@ -1,0 +1,29 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+PREFIX schema: <https://schema.org/>
+
+# Q2: Search for recent news about OpenAI (CSV + Web Search)
+# Question: "Find recent news about OpenAI"
+
+SELECT ?company_name ?news_title ?news_url ?snippet WHERE {
+    # Get company from CSV
+    BIND(ggf:SLM-CSV("./demo/companies_news/data/companies.csv") AS ?csvGraph)
+    GRAPH ?csvGraph {
+        ?row ex:company_name ?company_name .
+    }
+    FILTER(?company_name = "OpenAI")
+
+    # Build search query
+    BIND(CONCAT(?company_name, " latest news November 2024") AS ?search_query)
+
+    # Search web using SEARCH (DuckDuckGo)
+    BIND(ggf:SEARCH(?search_query) AS ?webGraph)
+    GRAPH ?webGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?news_title .
+        ?item schema:description ?snippet .
+        BIND(?item AS ?news_url)
+    }
+}
+LIMIT 5

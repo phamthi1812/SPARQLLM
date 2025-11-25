@@ -1,0 +1,43 @@
+{
+  "timestamp": "2025-11-21T08:55:14.479847",
+  "total": 5,
+  "passed": 0,
+  "failed": 5,
+  "results": [
+    {
+      "query_id": "gt_01_top_victims",
+      "success": true,
+      "time_ms": 4250,
+      "rows": 10,
+      "valid": false
+    },
+    {
+      "query_id": "gt_02_decade_count",
+      "success": true,
+      "time_ms": 3738,
+      "rows": 16,
+      "valid": false
+    },
+    {
+      "query_id": "gt_03_country_count",
+      "success": true,
+      "time_ms": 3748,
+      "rows": 15,
+      "valid": false
+    },
+    {
+      "query_id": "gt_04_us_1970s",
+      "success": true,
+      "time_ms": 3801,
+      "rows": 11,
+      "valid": false
+    },
+    {
+      "query_id": "gt_05_high_victims",
+      "success": true,
+      "time_ms": 3774,
+      "rows": 25,
+      "valid": false
+    }
+  ]
+}

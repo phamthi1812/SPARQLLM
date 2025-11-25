@@ -1,0 +1,57 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX schema: <https://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ex: <http://example.org/>
+
+SELECT DISTINCT ?restaurantName ?address ?phone ?rating ?priceRange WHERE {
+    # Step 1: Search for restaurants
+    BIND(ggf:SEARCH("restaurants Nantes Houssinière campus", 5) AS ?searchGraph)
+
+    GRAPH ?searchGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?title .
+
+        # Filter to restaurant results only
+        FILTER(
+            CONTAINS(LCASE(?title), "restaurant") ||
+            CONTAINS(LCASE(?title), "resto")
+        )
+
+        # Get URL for fetching
+        BIND(STR(?item) AS ?url)
+    }
+
+    # Step 2: Fetch webpage content (commented out for now - requires Playwright/SNAP setup)
+    # BIND(ggf:SNAP(?url, 3000, true) AS ?pageGraph)
+
+    # GRAPH ?pageGraph {
+    #     ?page schema:text ?pageText .
+    # }
+
+    # Step 3: Extract structured data with LLM
+    # This is where the LLM should extract:
+    # - Restaurant name
+    # - Full address
+    # - Phone number
+    # - Rating/reviews
+    # - Price range
+    BIND(ggf:LLM(
+        CONCAT(
+            "Extract restaurant details from this text in JSON format. ",
+            "Return: {\"name\": \"...\", \"address\": \"...\", \"phone\": \"...\", \"rating\": \"...\", \"price\": \"...\"}. ",
+            "Text: ", STR(?title)
+        )
+    ) AS ?llmGraph)
+
+    GRAPH ?llmGraph {
+        ?restaurant ex:name ?restaurantName .
+        ?restaurant ex:address ?address .
+
+        OPTIONAL { ?restaurant ex:phone ?phone }
+        OPTIONAL { ?restaurant ex:rating ?rating }
+        OPTIONAL { ?restaurant ex:priceRange ?priceRange }
+    }
+}
+ORDER BY DESC(?rating)
+LIMIT 10

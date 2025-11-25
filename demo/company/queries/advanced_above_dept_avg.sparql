@@ -1,0 +1,43 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Find employees whose salary is above the average salary in their department
+# This requires calculating department averages first, then comparing
+
+SELECT ?employee_name ?department_name ?salary ?dept_avg_salary WHERE {
+    # Load both CSV files
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    # Get employee data
+    GRAPH ?empGraph {
+        ?emp ex:name ?employee_name .
+        ?emp ex:salary ?salary .
+        ?emp ex:department_id ?dept_id .
+    }
+
+    # Get department name
+    GRAPH ?deptGraph {
+        ?dept ex:department_id ?dept_id .
+        ?dept ex:department_name ?department_name .
+    }
+
+    # Subquery: Calculate average salary per department
+    {
+        SELECT ?dept_id_sub (AVG(?salary_sub) AS ?dept_avg_salary) WHERE {
+            BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph_sub)
+            GRAPH ?empGraph_sub {
+                ?emp_sub ex:department_id ?dept_id_sub .
+                ?emp_sub ex:salary ?salary_sub .
+            }
+        }
+        GROUP BY ?dept_id_sub
+    }
+
+    # Join employee's dept with department average
+    FILTER(?dept_id = ?dept_id_sub)
+
+    # Filter: employee salary > department average
+    FILTER(?salary > ?dept_avg_salary)
+}
+ORDER BY ?department_name DESC(?salary)

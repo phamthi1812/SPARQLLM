@@ -1,0 +1,32 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Example: Aggregation with JOIN
+# Question: "What is the average salary in each department?"
+
+SELECT ?department_name ?dept_location
+       (COUNT(?employee_name) AS ?employee_count)
+       (AVG(?salary) AS ?avg_salary)
+       (MIN(?salary) AS ?min_salary)
+       (MAX(?salary) AS ?max_salary)
+WHERE {
+    # Load both CSV files
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    # Get employee data
+    GRAPH ?empGraph {
+        ?emp ex:name ?employee_name .
+        ?emp ex:salary ?salary .
+        ?emp ex:department_id ?dept_id .
+    }
+
+    # JOIN with department data
+    GRAPH ?deptGraph {
+        ?dept ex:department_id ?dept_id .
+        ?dept ex:department_name ?department_name .
+        ?dept ex:location ?dept_location .
+    }
+}
+GROUP BY ?department_name ?dept_location
+ORDER BY DESC(?avg_salary)

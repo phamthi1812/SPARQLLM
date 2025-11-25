@@ -1,0 +1,27 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Example: UNION query combining data from multiple CSVs
+# Question: "What are all the unique office locations across the company?"
+
+SELECT DISTINCT ?location ?source
+WHERE {
+    {
+        # Get locations from employees.csv
+        BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+        GRAPH ?empGraph {
+            ?emp ex:location ?location .
+        }
+        BIND("Employee Location" AS ?source)
+    }
+    UNION
+    {
+        # Get locations from departments.csv
+        BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+        GRAPH ?deptGraph {
+            ?dept ex:location ?location .
+        }
+        BIND("Department Location" AS ?source)
+    }
+}
+ORDER BY ?location ?source

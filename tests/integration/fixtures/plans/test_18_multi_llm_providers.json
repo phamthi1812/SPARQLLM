@@ -1,0 +1,58 @@
+{
+  "test_id": "test_18",
+  "name": "Multiple LLM providers",
+  "description": "Use different LLM providers in same query",
+  "question": "Extract entities with Ollama, then summarize with OpenAI",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READFILE",
+          "args": {
+            "file": "./tests/integration/fixtures/data/article.txt"
+          }
+        },
+        "bindings": {
+          "text": "?text"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "llm_extract",
+        "ggf": {
+          "name": "SLM-LLMGRAPH",
+          "args": {
+            "prompt": "Extract entities: ?text"
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "entities": "?entities"
+        }
+      },
+      {
+        "id": "step3",
+        "operation": "llm_extract",
+        "ggf": {
+          "name": "SLM-LLMGRAPH_OPENAI",
+          "args": {
+            "prompt": "Summarize: ?entities"
+          }
+        },
+        "depends_on": ["step2"],
+        "bindings": {
+          "summary": "?summary"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["entities", "summary"]
+    }
+  },
+  "expected_bindings": ["entities", "summary"],
+  "min_results": 1,
+  "requires_llm": true
+}

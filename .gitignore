@@ -2,3 +2,45 @@ __pycache__/
 *.py[cod]
 build/*
 *.egg-info
+
+# Claude Code specific
+.claude/
+
+# OpenCode specific
+.opencode/
+
+# Virtual environments
+venv*/
+env*/
+ENV*/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Data files (if not intended to be tracked)
+data/faiss_store/
+data/whoosh_store/
+
+# Test outputs
+test_*.py
+*_test.py

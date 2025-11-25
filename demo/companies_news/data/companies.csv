@@ -1,0 +1,16 @@
+company_name,sector,headquarters,founded,ceo,description,website
+OpenAI,Artificial Intelligence,San Francisco,2015,Sam Altman,AI research and deployment company behind ChatGPT and GPT models,openai.com
+Anthropic,Artificial Intelligence,San Francisco,2021,Dario Amodei,AI safety company developing Claude AI assistant,anthropic.com
+Google,Technology,Mountain View,1998,Sundar Pichai,Multinational technology company specializing in search and cloud services,google.com
+Microsoft,Technology,Redmond,1975,Satya Nadella,Technology corporation developing software and cloud computing,microsoft.com
+Meta,Social Media,Menlo Park,2004,Mark Zuckerberg,Social technology company operating Facebook Instagram and WhatsApp,meta.com
+Amazon,E-commerce,Seattle,1994,Andy Jassy,E-commerce and cloud computing company,amazon.com
+Tesla,Automotive,Austin,2003,Elon Musk,Electric vehicle and clean energy company,tesla.com
+NVIDIA,Semiconductors,Santa Clara,1993,Jensen Huang,Graphics processing and AI chip manufacturer,nvidia.com
+Apple,Consumer Electronics,Cupertino,1976,Tim Cook,Consumer electronics and software company,apple.com
+Salesforce,Enterprise Software,San Francisco,1999,Marc Benioff,Cloud-based customer relationship management platform,salesforce.com
+SpaceX,Aerospace,Hawthorne,2002,Elon Musk,Aerospace manufacturer and space transportation company,spacex.com
+Netflix,Streaming,Los Gatos,1997,Ted Sarandos,Streaming entertainment service,netflix.com
+Uber,Transportation,San Francisco,2009,Dara Khosrowshahi,Ride-sharing and food delivery platform,uber.com
+Airbnb,Hospitality,San Francisco,2008,Brian Chesky,Online marketplace for lodging and tourism,airbnb.com
+Stripe,Financial Technology,San Francisco,2010,Patrick Collison,Online payment processing platform,stripe.com

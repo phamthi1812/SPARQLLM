@@ -1,0 +1,19 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX schema: <https://schema.org/>
+
+# Test 1: Basic SEARCH function
+# Simple web search without CSV or LLM
+
+SELECT ?title ?url ?description WHERE {
+    # Direct web search
+    BIND(ggf:SEARCH("OpenAI GPT-4 2024") AS ?webGraph)
+
+    GRAPH ?webGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?title .
+        ?item schema:description ?description .
+        BIND(?item AS ?url)
+    }
+}
+LIMIT 3

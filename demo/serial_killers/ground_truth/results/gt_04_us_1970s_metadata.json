@@ -1,0 +1,20 @@
+{
+  "query_id": "gt_04_us_1970s",
+  "timestamp": "2025-11-21T08:55:10.702748",
+  "success": true,
+  "exit_code": 0,
+  "time_ms": 3801,
+  "row_count": 11,
+  "columns": [
+    "name decade",
+    "country victim_min victim_max"
+  ],
+  "validation": {
+    "valid": false,
+    "errors": [
+      "Missing expected columns: ['name', 'decade', 'country']"
+    ],
+    "warnings": []
+  },
+  "stderr": null
+}

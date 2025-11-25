@@ -1,0 +1,20 @@
+{
+  "query_id": "gt_01_top_victims",
+  "timestamp": "2025-11-21T08:54:59.407340",
+  "success": true,
+  "exit_code": 0,
+  "time_ms": 4250,
+  "row_count": 10,
+  "columns": [
+    "name",
+    "country victim_min victim_max"
+  ],
+  "validation": {
+    "valid": false,
+    "errors": [
+      "Missing expected columns: ['country', 'victim_min', 'victim_max']"
+    ],
+    "warnings": []
+  },
+  "stderr": null
+}

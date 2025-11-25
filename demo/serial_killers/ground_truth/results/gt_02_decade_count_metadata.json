@@ -1,0 +1,19 @@
+{
+  "query_id": "gt_02_decade_count",
+  "timestamp": "2025-11-21T08:55:03.148144",
+  "success": true,
+  "exit_code": 0,
+  "time_ms": 3738,
+  "row_count": 16,
+  "columns": [
+    "decade count"
+  ],
+  "validation": {
+    "valid": false,
+    "errors": [
+      "Missing expected columns: ['decade', 'count']"
+    ],
+    "warnings": []
+  },
+  "stderr": null
+}

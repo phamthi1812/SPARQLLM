@@ -1,0 +1,129 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "SPARQLLM Logical Plan",
+  "description": "Schema for LLM-generated logical query plans that compile to SPARQL",
+  "type": "object",
+  "required": ["version", "steps", "output"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Logical plan schema version"
+    },
+    "steps": {
+      "type": "array",
+      "description": "Ordered list of query execution steps",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "operation", "ggf"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^step[0-9]+$",
+            "description": "Unique step identifier (e.g., step1, step2)"
+          },
+          "operation": {
+            "type": "string",
+            "enum": [
+              "read_filesystem",
+              "llm_extract",
+              "web_search",
+              "vector_search",
+              "sql_query",
+              "join",
+              "filter",
+              "aggregate",
+              "graph_operation"
+            ],
+            "description": "Type of operation this step performs"
+          },
+          "ggf": {
+            "type": "object",
+            "required": ["name", "args"],
+            "description": "Graph Generating Function to invoke",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "GGF alias from catalog (e.g., SLM-READFILE, LLM)"
+              },
+              "args": {
+                "type": "object",
+                "description": "Arguments to pass to GGF (key-value pairs)"
+              }
+            }
+          },
+          "depends_on": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^step[0-9]+$"
+            },
+            "description": "List of step IDs this step depends on (for topological ordering)"
+          },
+          "bindings": {
+            "type": "object",
+            "description": "Variable bindings produced by this step (maps semantic name to SPARQL variable)",
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^\\?[a-zA-Z_][a-zA-Z0-9_]*$"
+            }
+          },
+          "filters": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "SPARQL FILTER expressions to apply in this step's GRAPH clause"
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": ["variables"],
+      "description": "Output specification for SELECT clause",
+      "properties": {
+        "variables": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "description": "Variable names to return (without ? prefix)"
+          },
+          "description": "Variables to project in SELECT clause"
+        },
+        "distinct": {
+          "type": "boolean",
+          "default": false,
+          "description": "Apply DISTINCT to result set"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum number of results to return"
+        },
+        "order_by": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["variable"],
+            "properties": {
+              "variable": {
+                "type": "string",
+                "description": "Variable to sort by (without ? prefix)"
+              },
+              "order": {
+                "type": "string",
+                "enum": ["ASC", "DESC"],
+                "default": "ASC",
+                "description": "Sort direction"
+              }
+            }
+          },
+          "description": "ORDER BY specifications"
+        }
+      }
+    }
+  }
+}

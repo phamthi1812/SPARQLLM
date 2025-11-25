@@ -1,0 +1,30 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Ground Truth Query 4: US serial killers in 1970s
+# Question: "List all serial killers from the United States active in the 1970s"
+# Expected: Filtered list with name, decade, country
+# Category: Pure CSV (FILTER)
+
+SELECT ?name ?decade ?country ?victim_min ?victim_max
+WHERE {
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:country ?country .
+        ?row ex:decade ?decade .
+    }
+
+    OPTIONAL {
+        GRAPH ?csvGraph {
+            ?row ex:victim_min ?victim_min .
+            ?row ex:victim_max ?victim_max .
+        }
+    }
+
+    # Filter for US and 1970s
+    FILTER(CONTAINS(LCASE(STR(?country)), "united states") || CONTAINS(LCASE(STR(?country)), "usa"))
+    FILTER(?decade = "1970s")
+}
+ORDER BY ?name

@@ -1,0 +1,45 @@
+{
+  "test_id": "test_08",
+  "name": "Multi-source join",
+  "description": "Join data from CSV with web search results",
+  "question": "For each city in cities.csv, search for its Wikipedia page",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-CSV",
+          "args": {
+            "file": "./tests/integration/fixtures/data/cities.csv"
+          }
+        },
+        "bindings": {
+          "city": "?city"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "web_search",
+        "ggf": {
+          "name": "SEARCH",
+          "args": {
+            "query": "?city Wikipedia"
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "url": "?url"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["city", "url"],
+      "limit": 5
+    }
+  },
+  "expected_bindings": ["city", "url"],
+  "min_results": 1,
+  "requires_network": true
+}

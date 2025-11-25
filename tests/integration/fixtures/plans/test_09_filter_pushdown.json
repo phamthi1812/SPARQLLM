@@ -1,0 +1,37 @@
+{
+  "test_id": "test_09",
+  "name": "Filter pushdown optimization",
+  "description": "Apply filters early to reduce data volume",
+  "question": "Find cities with population > 1000000 in cities.csv",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-CSV",
+          "args": {
+            "file": "./tests/integration/fixtures/data/cities.csv"
+          }
+        },
+        "bindings": {
+          "city": "?city",
+          "population": "?population"
+        },
+        "filters": ["?population > 1000000"]
+      }
+    ],
+    "output": {
+      "variables": ["city", "population"],
+      "order_by": [
+        {
+          "variable": "population",
+          "order": "DESC"
+        }
+      ]
+    }
+  },
+  "expected_bindings": ["city", "population"],
+  "min_results": 0
+}

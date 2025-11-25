@@ -1,0 +1,75 @@
+{
+  "version": "1.0",
+  "description": "Find restaurants near Campus Lombarderie with LLM extraction",
+  "steps": [
+    {
+      "id": "step1",
+      "operation": "web_search",
+      "ggf": {
+        "name": "SEARCH",
+        "args": {
+          "query": "restaurants near Campus Lombarderie Nantes Houssinière",
+          "limit": 5
+        }
+      },
+      "bindings": {
+        "title": "?restaurantTitle",
+        "url": "?restaurantUrl"
+      },
+      "depends_on": []
+    },
+    {
+      "id": "step2",
+      "operation": "web_fetch",
+      "ggf": {
+        "name": "SNAP",
+        "args": {
+          "url": "?restaurantUrl",
+          "wait_ms": 3000,
+          "snippet_only": true
+        }
+      },
+      "bindings": {
+        "text": "?pageContent"
+      },
+      "depends_on": ["step1"]
+    },
+    {
+      "id": "step3",
+      "operation": "llm_extract",
+      "ggf": {
+        "name": "LLM",
+        "args": {
+          "prompt": "CONCAT('Extract restaurant details from this webpage. Return JSON: {\"name\": \"full name\", \"address\": \"full address\", \"phone\": \"phone number\", \"cuisine\": \"type of food\", \"priceRange\": \"$ or $$ or $$$\", \"rating\": \"rating out of 5\"}. Webpage content: ', ?pageContent)"
+        }
+      },
+      "bindings": {
+        "name": "?name",
+        "address": "?address",
+        "phone": "?phone",
+        "cuisine": "?cuisine",
+        "priceRange": "?priceRange",
+        "rating": "?rating"
+      },
+      "depends_on": ["step2"]
+    }
+  ],
+  "output": {
+    "variables": ["name", "address", "phone", "cuisine", "priceRange", "rating"],
+    "distinct": true,
+    "order_by": [
+      {"variable": "priceRange", "order": "ASC"},
+      {"variable": "rating", "order": "DESC"}
+    ],
+    "limit": 10
+  },
+  "metadata": {
+    "comment": "This is what GPT-4 should generate - proper SEARCH → SNAP → LLM chain",
+    "estimated_cost": {
+      "searches": 1,
+      "page_fetches": 5,
+      "llm_calls": 5,
+      "total_time_ms": 12000
+    }
+  }
+}

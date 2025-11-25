@@ -1,0 +1,31 @@
+employee_id,name,department_id,salary,hire_date,position,location,email,years_experience,performance_rating
+E001,Alice Johnson,D01,95000,2018-03-15,Senior Software Engineer,San Francisco,alice.j@company.com,8,4.5
+E002,Bob Smith,D01,78000,2020-06-01,Software Engineer,San Francisco,bob.s@company.com,5,4.2
+E003,Carol White,D02,110000,2017-01-20,Marketing Director,New York,carol.w@company.com,12,4.8
+E004,David Brown,D02,65000,2021-09-10,Marketing Specialist,New York,david.b@company.com,3,4.0
+E005,Emma Davis,D03,125000,2016-05-15,Finance Manager,Chicago,emma.d@company.com,15,4.9
+E006,Frank Miller,D03,72000,2019-11-20,Financial Analyst,Chicago,frank.m@company.com,6,4.3
+E007,Grace Lee,D01,105000,2017-08-10,Lead Developer,San Francisco,grace.l@company.com,10,4.7
+E008,Henry Wilson,D04,88000,2018-12-05,HR Manager,New York,henry.w@company.com,9,4.4
+E009,Iris Taylor,D04,58000,2022-02-15,HR Coordinator,New York,iris.t@company.com,2,3.9
+E010,Jack Anderson,D02,69000,2020-04-01,Social Media Manager,Remote,jack.a@company.com,4,4.1
+E011,Kate Martinez,D01,82000,2019-07-22,Software Engineer,Austin,kate.m@company.com,6,4.3
+E012,Liam Garcia,D05,145000,2015-10-01,VP of Sales,Boston,liam.g@company.com,18,4.9
+E013,Mia Rodriguez,D05,92000,2019-03-15,Sales Manager,Boston,mia.r@company.com,7,4.6
+E014,Noah Hernandez,D05,67000,2021-06-20,Sales Representative,Remote,noah.h@company.com,3,4.0
+E015,Olivia Lopez,D03,79000,2020-01-10,Senior Accountant,Chicago,olivia.l@company.com,8,4.4
+E016,Peter Gonzalez,D01,71000,2021-11-05,Junior Developer,San Francisco,peter.g@company.com,2,3.8
+E017,Quinn Perez,D06,98000,2018-05-20,Operations Manager,Seattle,quinn.p@company.com,9,4.5
+E018,Rachel Torres,D06,73000,2020-08-12,Operations Coordinator,Seattle,rachel.t@company.com,4,4.2
+E019,Sam Rivera,D02,76000,2019-09-30,Brand Manager,New York,sam.r@company.com,6,4.3
+E020,Tina Campbell,D04,62000,2021-03-25,Recruiter,Remote,tina.c@company.com,3,4.1
+E021,Uma Parker,D05,85000,2018-11-15,Account Executive,Boston,uma.p@company.com,7,4.4
+E022,Victor Evans,D01,135000,2014-02-01,Engineering Director,San Francisco,victor.e@company.com,20,4.9
+E023,Wendy Edwards,D03,155000,2013-07-10,CFO,Chicago,wendy.e@company.com,22,5.0
+E024,Xavier Collins,D06,81000,2019-04-18,Supply Chain Analyst,Seattle,xavier.c@company.com,5,4.2
+E025,Yara Stewart,D02,94000,2017-12-08,Creative Director,New York,yara.s@company.com,11,4.7
+E026,Zack Morris,D05,59000,2022-05-01,Junior Sales Associate,Remote,zack.m@company.com,1,3.7
+E027,Amy Cooper,D01,89000,2019-02-14,DevOps Engineer,Austin,amy.c@company.com,7,4.5
+E028,Brian Reed,D04,115000,2016-09-20,VP of HR,New York,brian.r@company.com,16,4.8
+E029,Chloe Bailey,D06,77000,2020-10-05,Logistics Coordinator,Seattle,chloe.b@company.com,4,4.1
+E030,Derek Foster,D03,68000,2021-07-12,Junior Accountant,Chicago,derek.f@company.com,2,3.9

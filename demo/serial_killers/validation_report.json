@@ -1,0 +1,68 @@
+{
+  "timestamp": "2025-11-21T09:04:03.599932",
+  "data_validation": {
+    "file_exists": true,
+    "row_count": 757,
+    "column_count": 10,
+    "columns": [
+      "name",
+      "country",
+      "start_year",
+      "end_year",
+      "proven_victims",
+      "possible_victims",
+      "notes",
+      "decade",
+      "victim_min",
+      "victim_max"
+    ],
+    "has_name": true,
+    "has_decade": true,
+    "has_victim_min": true,
+    "has_victim_max": true,
+    "null_names": 0,
+    "null_decades": 0,
+    "unique_names": 757,
+    "unique_decades": 17
+  },
+  "query_tests": {
+    "q1_top_victims": {
+      "status": "PASS",
+      "rows": 10,
+      "expected_min": 10
+    },
+    "q5_geographical_patterns": {
+      "status": "PASS",
+      "rows": 15,
+      "expected_min": 5
+    },
+    "q6_decade_statistics": {
+      "status": "PASS",
+      "rows": 16,
+      "expected_min": 10
+    }
+  },
+  "ggf_tests": {
+    "SLM-CSV": {
+      "status": "PASS"
+    },
+    "SLM-LLMGRAPH": {
+      "status": "PASS"
+    }
+  },
+  "summary": {
+    "data_validation": "PASS",
+    "queries": {
+      "total": 3,
+      "pass": 3,
+      "fail": 0,
+      "warning": 0
+    },
+    "ggfs": {
+      "total": 2,
+      "pass": 2,
+      "fail": 0
+    },
+    "overall": "PASS"
+  }
+}

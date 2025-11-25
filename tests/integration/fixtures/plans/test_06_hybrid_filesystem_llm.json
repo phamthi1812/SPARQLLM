@@ -1,0 +1,58 @@
+{
+  "test_id": "test_06",
+  "name": "Hybrid filesystem + LLM",
+  "description": "Read files from directory and extract entities with LLM",
+  "question": "List all text files and extract their main topics using LLM",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READDIR",
+          "args": {
+            "path": "./tests/integration/fixtures/data"
+          }
+        },
+        "bindings": {
+          "fileUri": "?fileUri"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READFILE",
+          "args": {
+            "file": "?fileUri"
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "text": "?text"
+        }
+      },
+      {
+        "id": "step3",
+        "operation": "llm_extract",
+        "ggf": {
+          "name": "LLM",
+          "args": {
+            "prompt": "Extract the main topic from this text in 1-3 words: ?text"
+          }
+        },
+        "depends_on": ["step2"],
+        "bindings": {
+          "topic": "?topic"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["fileUri", "topic"]
+    }
+  },
+  "expected_bindings": ["fileUri", "topic"],
+  "min_results": 1,
+  "requires_llm": true
+}

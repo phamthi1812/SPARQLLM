@@ -1,0 +1,208 @@
+# Advanced Multi-CSV Questions
+
+These questions test more complex reasoning and SPARQL generation capabilities.
+
+## Category 1: Self-Joins (Manager-Employee Relationships)
+
+### Q1.1: Manager Details
+**Question:** "Show each department with its manager's name, salary, and years of experience"
+**Challenge:** Need to join departments.manager_id with employees.employee_id (self-join concept)
+**Expected:** Join departments and employees where dept.manager_id = emp.employee_id
+
+### Q1.2: Manager vs Team Comparison
+**Question:** "For each department, show the manager's salary and the average salary of their team members"
+**Challenge:** Need two different joins - one for manager, one for team aggregation
+**Expected:** Complex query with subquery or multiple aggregations
+
+### Q1.3: Non-Manager Employees
+**Question:** "Find all employees who are NOT department managers"
+**Challenge:** Need to use NOT EXISTS or left join with filter
+**Expected:** Anti-join pattern
+
+---
+
+## Category 2: Nested Aggregations
+
+### Q2.1: Above Average Salaries
+**Question:** "Find employees whose salary is above the average salary in their department"
+**Challenge:** Need subquery or window function to compare individual to department average
+**Expected:** Nested query with GROUP BY in subquery
+
+### Q2.2: Departments Above Company Average
+**Question:** "Which departments have an average salary higher than the overall company average?"
+**Challenge:** Need to calculate company average, then compare to department averages
+**Expected:** Subquery with HAVING clause
+
+### Q2.3: Top Performer Per Department
+**Question:** "Show the highest-rated employee in each department"
+**Challenge:** Need to partition by department and find max rating
+**Expected:** Window function or subquery with MAX
+
+---
+
+## Category 3: Complex Multi-Condition Queries
+
+### Q3.1: Budget Efficiency Analysis
+**Question:** "Find departments where the total payroll is less than 50% of their budget"
+**Challenge:** Need to aggregate salaries, compare to budget with calculation
+**Expected:** GROUP BY with SUM, HAVING clause with arithmetic
+
+### Q3.2: Experience vs Performance
+**Question:** "Find employees with more than 10 years experience but performance rating below 4.0"
+**Challenge:** Multiple filters across different columns
+**Expected:** Multiple FILTER conditions
+
+### Q3.3: Multi-Location Department Analysis
+**Question:** "For departments located in New York, find employees working remotely or in different cities"
+**Challenge:** Join + filter on department location + filter on employee location mismatch
+**Expected:** Complex WHERE with location comparison
+
+---
+
+## Category 4: Ranking and Comparison
+
+### Q4.1: Salary Percentile
+**Question:** "Find the top 20% earners in each department"
+**Challenge:** Need ranking within groups
+**Expected:** Window function or complex subquery
+
+### Q4.2: Department Size Comparison
+**Question:** "List departments with more employees than the Sales department"
+**Challenge:** Need to count employees per dept, then compare to Sales count
+**Expected:** Subquery to get Sales count, then filter
+
+### Q4.3: Budget vs Headcount Ratio
+**Question:** "Show departments ranked by budget per employee (highest to lowest)"
+**Challenge:** Calculate ratio of budget to employee count
+**Expected:** Aggregation with calculated field, ORDER BY
+
+---
+
+## Category 5: Multiple Data Integration Patterns
+
+### Q5.1: Three-Way Join
+**Question:** "Show employees, their managers, and both of their departments"
+**Challenge:** Need to join employees twice (once for employee, once for manager)
+**Expected:** Multiple joins with different aliases
+
+### Q5.2: Cross-Department Analysis
+**Question:** "Find employees who earn more than the average salary of a different department (compare each employee to all other departments)"
+**Challenge:** Multiple comparisons across departments
+**Expected:** Complex join with aggregation
+
+### Q5.3: Hire Date Patterns
+**Question:** "Which department has hired the most employees in the last 5 years?"
+**Challenge:** Date filtering + aggregation + ordering
+**Expected:** Date arithmetic, GROUP BY, COUNT, ORDER BY
+
+---
+
+## Category 6: String Operations and Pattern Matching
+
+### Q6.1: Position Level Analysis
+**Question:** "Find all 'Senior' and 'VP' level employees grouped by department"
+**Challenge:** String pattern matching (contains "Senior" or "VP")
+**Expected:** FILTER with REGEX or CONTAINS
+
+### Q6.2: Email Domain Analysis
+**Question:** "List employees whose email domain doesn't match their location's expected domain"
+**Challenge:** String extraction from email + comparison logic
+**Expected:** REGEX or string functions
+
+### Q6.3: Name Pattern Search
+**Question:** "Find employees whose names start with the same letter as their department name"
+**Challenge:** String comparison across joined tables
+**Expected:** SUBSTR or STRSTARTS functions
+
+---
+
+## Category 7: Advanced Aggregations
+
+### Q7.1: Multi-Level Aggregation
+**Question:** "What percentage of the total company payroll does each department represent?"
+**Challenge:** Need total payroll AND department payroll, then calculate percentage
+**Expected:** Nested aggregation or UNION with totals
+
+### Q7.2: Variance Analysis
+**Question:** "Which department has the highest salary variance (difference between highest and lowest paid employees)?"
+**Challenge:** Calculate MAX - MIN per department
+**Expected:** GROUP BY with MAX and MIN in same query
+
+### Q7.3: Multiple Metrics Dashboard
+**Question:** "For each department, show: employee count, total payroll, average salary, average years of experience, and average performance rating"
+**Challenge:** Multiple aggregation functions in single query
+**Expected:** GROUP BY with multiple aggregate functions
+
+---
+
+## Category 8: Conditional Logic
+
+### Q8.1: Tiered Performance Bonus
+**Question:** "Categorize employees as 'Exceeds' (rating > 4.5), 'Meets' (rating 3.5-4.5), or 'Below' (rating < 3.5) by department"
+**Challenge:** Need CASE statement or bindings with conditions
+**Expected:** BIND with IF or CASE-like logic
+
+### Q8.2: Budget Alert Status
+**Question:** "Mark departments as 'Over Budget' if payroll exceeds 80% of budget, 'At Risk' if 60-80%, 'Healthy' if below 60%"
+**Challenge:** Complex conditional logic with thresholds
+**Expected:** Multiple BIND with conditional expressions
+
+---
+
+## Category 9: Set Operations
+
+### Q9.1: Exclusive Locations
+**Question:** "Find locations that have employees but NO department headquarters"
+**Challenge:** Set difference operation
+**Expected:** MINUS or NOT EXISTS pattern
+
+### Q9.2: Full Location Coverage
+**Question:** "Find locations that have BOTH employees AND department headquarters"
+**Challenge:** Set intersection
+**Expected:** Join or EXISTS for both conditions
+
+### Q9.3: Location Gap Analysis
+**Question:** "List all combinations of employee locations and department locations that don't currently exist in the data"
+**Challenge:** Need cartesian product minus existing combinations
+**Expected:** Complex set operation
+
+---
+
+## Category 10: Performance Optimization Challenges
+
+### Q10.1: Efficient Large Query
+**Question:** "Find high performers in high-budget departments, but only load the minimum necessary data"
+**Challenge:** Test LLM's ability to write efficient queries
+**Expected:** Proper FILTER placement, avoid unnecessary data loading
+
+### Q10.2: Minimal Join Query
+**Question:** "List employee names and department names without loading unnecessary columns"
+**Challenge:** Select only needed columns from CSVs
+**Expected:** Selective property access in GRAPH patterns
+
+---
+
+## Success Criteria for Advanced Questions
+
+✅ **Self-Joins**: Can the LLM join same CSV with different aliases?
+✅ **Subqueries**: Can it generate nested SELECT statements?
+✅ **Complex Aggregations**: Multiple aggregate functions with GROUP BY and HAVING?
+✅ **String Operations**: REGEX, CONTAINS, SUBSTR functions?
+✅ **Date Operations**: Date filtering and calculations?
+✅ **Conditional Logic**: BIND with IF or CASE-like constructs?
+✅ **Set Operations**: UNION, MINUS, NOT EXISTS patterns?
+✅ **Anti-Joins**: Finding records that DON'T match?
+✅ **Window Functions**: Ranking within groups (if SPARQL supports)?
+✅ **Query Optimization**: Efficient query structure?
+
+---
+
+## Test These Questions
+
+Run the demo and try these questions to see how well the LLM handles complexity:
+
+```bash
+python demo/company/demo_multi_csv.py
+```
+
+Start with Category 1 (Self-Joins) and work up to more complex categories!

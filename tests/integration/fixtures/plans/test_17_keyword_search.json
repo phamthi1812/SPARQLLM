@@ -1,0 +1,38 @@
+{
+  "test_id": "test_17",
+  "name": "Keyword search (Whoosh)",
+  "description": "Full-text search using Whoosh index",
+  "question": "Search for documents containing 'database' keyword",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "vector_search",
+        "ggf": {
+          "name": "SLM-SEARCH-WHOOSH",
+          "args": {
+            "query": "database",
+            "limit": 5
+          }
+        },
+        "bindings": {
+          "document": "?document",
+          "score": "?score"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["document", "score"],
+      "order_by": [
+        {
+          "variable": "score",
+          "order": "DESC"
+        }
+      ]
+    }
+  },
+  "expected_bindings": ["document", "score"],
+  "min_results": 1,
+  "requires_index": "whoosh"
+}

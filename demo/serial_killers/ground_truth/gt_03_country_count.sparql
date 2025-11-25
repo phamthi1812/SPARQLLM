@@ -1,0 +1,23 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Ground Truth Query 3: Countries with most serial killers
+# Question: "Which countries have the most serial killers in the dataset?"
+# Expected: Countries with counts, ordered DESC
+# Category: Pure CSV (GROUP BY)
+
+SELECT ?country (COUNT(?name) AS ?count)
+WHERE {
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:country ?country .
+    }
+
+    # Filter out null countries
+    FILTER(BOUND(?country))
+}
+GROUP BY ?country
+ORDER BY DESC(?count)
+LIMIT 15

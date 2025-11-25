@@ -7,6 +7,7 @@ Normalizes data for SPARQL consumption, adds derived columns.
 
 import sys
 import re
+import csv
 from pathlib import Path
 import pandas as pd
 import numpy as np
@@ -264,19 +265,19 @@ def main():
         print("  ✓ Data types validated")
         print()
 
-        # Save cleaned version (all rows)
+        # Save cleaned version (all rows) with proper quoting
         output_clean = data_dir / "serial_killers_clean.csv"
-        df.to_csv(output_clean, index=False)
+        df.to_csv(output_clean, index=False, quoting=csv.QUOTE_NONNUMERIC)
         print(f"💾 Cleaned dataset saved: {output_clean}")
         print(f"   Rows: {len(df)}")
         print(f"   Columns: {len(df.columns)}")
         print()
 
-        # Save complete cases (no critical nulls)
+        # Save complete cases (no critical nulls) with proper quoting
         critical_cols = ['name', 'victim_min']
         df_complete = df.dropna(subset=[col for col in critical_cols if col in df.columns])
         output_complete = data_dir / "serial_killers_complete.csv"
-        df_complete.to_csv(output_complete, index=False)
+        df_complete.to_csv(output_complete, index=False, quoting=csv.QUOTE_NONNUMERIC)
         print(f"💾 Complete cases saved: {output_complete}")
         print(f"   Rows: {len(df_complete)}")
         print()

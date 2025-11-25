@@ -1,0 +1,35 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX schema: <https://schema.org/>
+
+# Test 3: SEARCH + LLM (Local Ollama)
+# Search web, then use local LLM to extract structured info
+
+SELECT ?news_title ?snippet ?extracted_info WHERE {
+    # Search for specific topic
+    BIND(ggf:SEARCH("OpenAI artificial intelligence 2024") AS ?webGraph)
+
+    GRAPH ?webGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?news_title .
+        ?item schema:description ?snippet .
+    }
+
+    # Extract structured info using LOCAL Ollama LLM
+    BIND(CONCAT(
+        "Extract key information from this text about a product launch: ",
+        SUBSTR(?snippet, 1, 400),
+        ". Return JSON-LD: {\"@context\": \"http://schema.org/\", ",
+        "\"@type\": \"Product\", ",
+        "\"name\": \"product name\", ",
+        "\"releaseDate\": \"release date\", ",
+        "\"description\": \"brief description\"}"
+    ) AS ?llm_prompt)
+
+    # Use default SLM-LLMGRAPH (local Ollama)
+    BIND(ggf:SLM-LLMGRAPH(?llm_prompt) AS ?llmGraph)
+    GRAPH ?llmGraph {
+        ?entity schema:description ?extracted_info .
+    }
+}
+LIMIT 2

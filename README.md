@@ -157,6 +157,115 @@ This pattern lets you chain multiple stages (e.g., directory listing → file re
 
 Some aliases may hide verbose JSON argument objects. When available they appear as simple function calls (e.g., `ggf:SEARCH("term")`). Inspect existing queries for concrete usage.
 
+## Multi-Step Query Capabilities
+
+SPARQLLM supports **LLM-driven multi-step query planning**, where natural language questions are automatically converted into complex logical plans that chain multiple GGFs together.
+
+### What is Multi-Step Planning?
+
+Instead of writing SPARQL manually, you describe your goal in natural language, and an LLM generates a structured plan that:
+- **Chains multiple GGFs** (web search → fetch → extract → search again)
+- **Passes variables between steps** using CONCAT for dynamic prompts
+- **Integrates data from multiple sources** (web, LLM, local files)
+- **Handles complex queries** requiring iterative data gathering
+
+### Example: Restaurant Finder
+
+**Question**: "Find cheap restaurants near the Web Conference 2024"
+
+**Generated Plan** (6 steps):
+1. Search web for "Web Conference 2024 location"
+2. Fetch conference website content
+3. LLM extracts city/country from content
+4. Search for "cheap restaurants near [extracted location]"
+5. Fetch restaurant pages (top 5)
+6. LLM extracts average menu prices
+7. Sort by price, return cheapest 5
+
+**Output**: SPARQL query with proper dependencies and variable passing.
+
+### Quick Start
+
+```bash
+# Using Ollama (local, free)
+python demo/multi_step/restaurant_finder.py --provider ollama
+
+# Using OpenAI (better quality, requires API key)
+python demo/multi_step/restaurant_finder.py --provider openai
+
+# Interactive mode - step through execution
+python demo/multi_step/restaurant_finder.py --provider ollama --interactive
+```
+
+### Interactive Mode
+
+Step-by-step execution lets you:
+- Preview each GGF call before execution
+- See estimated costs (LLM calls, web requests, time)
+- Approve, skip, or abort individual steps
+- Inspect intermediate results
+
+Example session:
+```
+Step 1/6: step1
+─────────────────────────────────────────────────────────
+Operation: web_search
+GGF: SEARCH
+Arguments:
+  query: Web Conference 2024 location
+  limit: 2
+
+Continue? [y=yes, s=skip, a=abort]: y
+Executing step1...
+✓ step1 completed
+
+Intermediate results:
+  Variables bound: confUrl, confTitle
+```
+
+### Auto-Detection of Complex Queries
+
+The system automatically detects when to use multi-step planning based on query keywords:
+
+**Complex indicators**:
+- Location-based: "near", "nearby", "located", "around"
+- Comparison: "cheap", "best", "top", "most", "least"
+- Aggregation: "find", "compare", "which"
+- External data: "conference", "event", "restaurant"
+
+If your question contains **2+ indicators**, multi-step mode activates automatically.
+
+### Cost & Performance
+
+Multi-step queries involve:
+- **LLM calls**: ~$0.01-0.03 each, 1-2 seconds
+- **Web requests**: Free but slower (1-3 seconds each)
+
+Example restaurant query costs:
+- 2 LLM calls (~$0.04, 3-4s)
+- 7 web requests (~7-10s)
+- **Total**: ~$0.04, 10-14 seconds
+
+Use `--interactive` mode to control costs by approving each step.
+
+### Documentation
+
+For detailed guides, examples, and troubleshooting:
+- **Quick Start**: `demo/multi_step/README.md`
+- **System Prompt**: `demo/prompts/plan_system_prompt_multi_step.txt`
+- **Reference Examples**: `demo/prompts/examples/restaurant_finder.json`
+
+### Available GGFs for Multi-Step Queries
+
+- **SEARCH**: DuckDuckGo web search
+- **SNAP**: Browser snapshot (Playwright)
+- **LLM**: Large language model (Groq, OpenAI, Ollama)
+- **SLM-BS4**: BeautifulSoup scraping
+- **SLM-GETTEXT**: URL to text extraction
+- Plus all filesystem, vector, and graph operations
+
+See `SPARQLLM/data/ggf-catalog.ttl` for the complete catalog.
+
 ## Testing
 Run the test suite (fast, mostly local):
 ```

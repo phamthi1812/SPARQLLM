@@ -1,0 +1,45 @@
+{
+  "test_id": "test_03",
+  "name": "LLM text extraction",
+  "description": "Extract structured information from text using LLM",
+  "question": "Extract the author and title from the text file",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READFILE",
+          "args": {
+            "file": "./tests/integration/fixtures/data/article.txt"
+          }
+        },
+        "bindings": {
+          "text": "?text"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "llm_extract",
+        "ggf": {
+          "name": "LLM",
+          "args": {
+            "prompt": "Extract the author and title from this text as JSON with keys 'author' and 'title': ?text"
+          }
+        },
+        "depends_on": ["step1"],
+        "bindings": {
+          "author": "?author",
+          "title": "?title"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["author", "title"]
+    }
+  },
+  "expected_bindings": ["author", "title"],
+  "min_results": 1,
+  "requires_llm": true
+}

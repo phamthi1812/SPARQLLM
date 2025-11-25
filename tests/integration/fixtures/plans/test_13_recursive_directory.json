@@ -1,0 +1,32 @@
+{
+  "test_id": "test_13",
+  "name": "Recursive directory traversal",
+  "description": "Read files from nested directory structure",
+  "question": "List all files in the data directory and its subdirectories",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READDIR",
+          "args": {
+            "path": "./tests/integration/fixtures/data",
+            "recursive": true
+          }
+        },
+        "bindings": {
+          "fileUri": "?fileUri",
+          "fileName": "?fileName",
+          "filePath": "?filePath"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["fileUri", "fileName", "filePath"]
+    }
+  },
+  "expected_bindings": ["fileUri", "fileName"],
+  "min_results": 1
+}

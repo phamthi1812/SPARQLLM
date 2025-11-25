@@ -1,0 +1,29 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+# Ground Truth Query 5: Serial killers with 50+ victims
+# Question: "Find serial killers with more than 50 confirmed victims"
+# Expected: Filtered list with victim_min > 50
+# Category: Pure CSV (FILTER)
+
+SELECT ?name ?country ?victim_min ?victim_max ?decade
+WHERE {
+    BIND(ggf:SLM-CSV("./demo/serial_killers/data/serial_killers_clean.csv") AS ?csvGraph)
+
+    GRAPH ?csvGraph {
+        ?row ex:name ?name .
+        ?row ex:victim_min ?victim_min .
+    }
+
+    OPTIONAL {
+        GRAPH ?csvGraph {
+            ?row ex:country ?country .
+            ?row ex:victim_max ?victim_max .
+            ?row ex:decade ?decade .
+        }
+    }
+
+    # Filter for 50+ confirmed victims
+    FILTER(?victim_min > 50)
+}
+ORDER BY DESC(?victim_min)

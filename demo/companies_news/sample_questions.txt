@@ -1,0 +1,137 @@
+# Companies + Web News Demo - Sample Questions
+
+## Category 1: CSV Only (Simple)
+
+### Q1.1: Filter by sector
+**Question:** "List all companies in the Artificial Intelligence sector"
+**Expected:** Query companies.csv, filter by sector
+
+### Q1.2: Filter by location
+**Question:** "Which companies are headquartered in San Francisco?"
+**Expected:** Query companies.csv, filter by headquarters
+
+### Q1.3: Filter by age
+**Question:** "Show companies founded after 2010"
+**Expected:** Query companies.csv, filter by founded > 2010
+
+### Q1.4: Sort and limit
+**Question:** "What are the 5 oldest companies?"
+**Expected:** Query companies.csv, ORDER BY founded ASC, LIMIT 5
+
+---
+
+## Category 2: CSV + Web Search (Medium)
+
+### Q2.1: Single company news
+**Question:** "Find recent news about Tesla"
+**Expected:** Get Tesla from CSV, web search for "Tesla latest news"
+
+### Q2.2: Company by sector
+**Question:** "Search for articles about NVIDIA"
+**Expected:** Get NVIDIA from CSV, web search
+
+### Q2.3: Multiple companies
+**Question:** "Get latest news for all AI companies"
+**Expected:** Filter CSV for AI sector, search for each (use LIMIT!)
+
+### Q2.4: Specific topic
+**Question:** "Find articles about OpenAI and GPT-4"
+**Expected:** Get OpenAI from CSV, search for "OpenAI GPT-4"
+
+---
+
+## Category 3: CSV + Web + LLM (Advanced)
+
+### Q3.1: Extract funding information
+**Question:** "What recent funding have AI companies received?"
+**Expected:**
+1. Filter CSV for AI companies
+2. Web search for funding news
+3. LLM extract: amount, investors, date
+
+### Q3.2: Extract product launches
+**Question:** "Find recent product launches from tech companies"
+**Expected:**
+1. Get tech companies from CSV
+2. Web search for product launch news
+3. LLM extract: product name, launch date, description
+
+### Q3.3: Extract partnerships
+**Question:** "What partnerships have been announced by cloud companies?"
+**Expected:**
+1. Filter CSV for relevant companies
+2. Web search for partnership news
+3. LLM extract: partner names, deal details
+
+### Q3.4: Extract executive changes
+**Question:** "Find recent CEO changes in tech companies"
+**Expected:**
+1. Get companies from CSV
+2. Web search for CEO/executive news
+3. LLM extract: new CEO, date, previous CEO
+
+---
+
+## Performance Notes
+
+⚠️ **Web Search + LLM is SLOW**
+- Use LIMIT to reduce number of searches
+- Start with LIMIT 2 or 3 for testing
+
+✅ **Good practice:**
+```sparql
+{
+    SELECT ?company WHERE {
+        # CSV query
+    }
+    LIMIT 3  # ← CRITICAL for performance
+}
+# Web search + LLM for only 3 companies
+```
+
+❌ **Bad practice:**
+```sparql
+SELECT ?company ?news WHERE {
+    # Gets all 15 companies
+    BIND(ggf:SLM-CSV(...) AS ?g)
+    GRAPH ?g { ?row ex:company_name ?company . }
+
+    # 15 web searches! Very slow!
+    BIND(ggf:SLM-WEBSEARCH(?company) AS ?web)
+}
+```
+
+---
+
+## Expected Results
+
+### Q1 (CSV only): ~instant
+```
+company_name    headquarters    founded
+OpenAI          San Francisco   2015
+Anthropic       San Francisco   2021
+```
+
+### Q2 (CSV + Web): ~2-5 seconds
+```
+company_name    news_title                      news_url
+OpenAI          OpenAI releases GPT-5...        https://...
+OpenAI          ChatGPT reaches 100M users...   https://...
+```
+
+### Q3 (CSV + Web + LLM): ~10-30 seconds
+```
+company_name    funding_amount    investors
+OpenAI          $10B              Microsoft
+Anthropic       $4B               Google
+```
+
+---
+
+## Testing Strategy
+
+1. **Start with Q1** (CSV only) - should be instant
+2. **Try Q2** (CSV + Web) with one company
+3. **Test Q3** (CSV + Web + LLM) with LIMIT 2
+
+This ensures everything works before running expensive queries!

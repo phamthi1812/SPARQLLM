@@ -1,0 +1,11 @@
+This is a simple text file for testing filesystem operations.
+
+It contains multiple lines of text that can be read and processed by the SPARQLLM system.
+
+Topics covered:
+- Database technologies
+- Semantic web
+- Knowledge graphs
+- RDF and SPARQL
+
+This file is used in integration tests to verify that the SLM-READFILE function works correctly.

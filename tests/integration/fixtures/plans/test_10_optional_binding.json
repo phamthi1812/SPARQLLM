@@ -1,0 +1,33 @@
+{
+  "test_id": "test_10",
+  "name": "Optional binding handling",
+  "description": "Handle optional data fields gracefully",
+  "question": "List all files with their optional metadata",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "read_filesystem",
+        "ggf": {
+          "name": "SLM-READDIR",
+          "args": {
+            "path": "./tests/integration/fixtures/data"
+          }
+        },
+        "bindings": {
+          "fileUri": "?fileUri",
+          "fileName": "?fileName",
+          "fileSize": "?fileSize"
+        },
+        "optional_bindings": ["fileSize"]
+      }
+    ],
+    "output": {
+      "variables": ["fileUri", "fileName", "fileSize"]
+    }
+  },
+  "expected_bindings": ["fileUri", "fileName"],
+  "optional_bindings": ["fileSize"],
+  "min_results": 1
+}

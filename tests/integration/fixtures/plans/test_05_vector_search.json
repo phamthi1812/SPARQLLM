@@ -1,0 +1,38 @@
+{
+  "test_id": "test_05",
+  "name": "Vector similarity search (FAISS)",
+  "description": "Search for similar documents using FAISS vector index",
+  "question": "Find documents similar to 'machine learning'",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "vector_search",
+        "ggf": {
+          "name": "SLM-SEARCH-FAISS",
+          "args": {
+            "query": "machine learning",
+            "k": 3
+          }
+        },
+        "bindings": {
+          "document": "?document",
+          "score": "?score"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["document", "score"],
+      "order_by": [
+        {
+          "variable": "score",
+          "order": "DESC"
+        }
+      ]
+    }
+  },
+  "expected_bindings": ["document", "score"],
+  "min_results": 1,
+  "requires_index": "faiss"
+}

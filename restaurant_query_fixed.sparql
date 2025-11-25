@@ -1,0 +1,24 @@
+PREFIX ggf: <http://ggf.org/>
+PREFIX schema: <https://schema.org/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT DISTINCT ?name ?url ?description WHERE {
+    # Search for restaurants near the address
+    BIND(ggf:SEARCH("restaurants Nantes rue de la Houssinière", 10) AS ?searchGraph)
+
+    # Navigate the schema.org structure correctly
+    GRAPH ?searchGraph {
+        ?feed schema:dataFeedElement ?feedItem .
+        ?feedItem schema:item ?item .
+        ?item schema:name ?name .
+        ?item rdf:type schema:WebPage .
+
+        # Get the URL from @id
+        BIND(?item AS ?url)
+
+        # Get description if available
+        OPTIONAL { ?item schema:description ?description }
+    }
+}
+ORDER BY ?name
+LIMIT 10

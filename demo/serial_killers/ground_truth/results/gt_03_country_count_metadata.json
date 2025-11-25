@@ -1,0 +1,19 @@
+{
+  "query_id": "gt_03_country_count",
+  "timestamp": "2025-11-21T08:55:06.898985",
+  "success": true,
+  "exit_code": 0,
+  "time_ms": 3748,
+  "row_count": 15,
+  "columns": [
+    "country count"
+  ],
+  "validation": {
+    "valid": false,
+    "errors": [
+      "Missing expected columns: ['country', 'count']"
+    ],
+    "warnings": []
+  },
+  "stderr": null
+}

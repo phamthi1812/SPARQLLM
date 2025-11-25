@@ -1,0 +1,324 @@
+# Company Data Schema - Advanced Patterns
+
+## Available Data Sources
+
+### 1. employees.csv
+**Path:** ./demo/company/data/employees.csv
+**Description:** Contains employee information including salary, position, and performance data
+**Columns:**
+- employee_id (string): Unique employee identifier (e.g., "E001")
+- name (string): Employee full name
+- department_id (string): Foreign key to departments.csv (e.g., "D01")
+- salary (integer): Annual salary in USD
+- hire_date (date): Date employee was hired (YYYY-MM-DD)
+- position (string): Job title
+- location (string): Employee work location (e.g., "San Francisco", "Remote")
+- email (string): Employee email address
+- years_experience (integer): Total years of professional experience
+- performance_rating (float): Performance score from 0.0 to 5.0
+
+**Row Count:** 30 employees
+
+---
+
+### 2. departments.csv
+**Path:** ./demo/company/data/departments.csv
+**Description:** Contains department information including budget and location
+**Columns:**
+- department_id (string): Unique department identifier (e.g., "D01")
+- department_name (string): Department name (e.g., "Engineering", "Marketing")
+- location (string): Primary department location
+- budget (integer): Annual department budget in USD
+- manager_id (string): Foreign key to employees.csv (employee_id of manager)
+- established_year (integer): Year department was established
+- floor (integer): Office floor number
+- building (string): Building name
+- description (string): Detailed department description
+
+**Row Count:** 6 departments
+
+---
+
+## Relationships (JOIN Keys)
+
+### employees ↔ departments
+**Join Condition:** employees.department_id = departments.department_id
+**Type:** Many-to-One (many employees belong to one department)
+
+### departments ↔ employees (Manager lookup)
+**Join Condition:** departments.manager_id = employees.employee_id
+**Type:** One-to-One (each department has one manager)
+
+---
+
+## Advanced Query Patterns
+
+### Pattern 1: Subquery for Aggregation Comparison
+**Use Case:** Compare individual values to group aggregates (e.g., "employees earning above their department average")
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+SELECT ?employee_name ?salary ?dept_avg WHERE {
+    # Get employee data
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    GRAPH ?empGraph {
+        ?emp ex:name ?employee_name .
+        ?emp ex:salary ?salary .
+        ?emp ex:department_id ?dept_id .
+    }
+
+    # Subquery: Calculate department averages
+    {
+        SELECT ?dept_id_sub (AVG(?salary_sub) AS ?dept_avg) WHERE {
+            BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph_sub)
+            GRAPH ?empGraph_sub {
+                ?emp_sub ex:department_id ?dept_id_sub .
+                ?emp_sub ex:salary ?salary_sub .
+            }
+        }
+        GROUP BY ?dept_id_sub
+    }
+
+    # Join with subquery results
+    FILTER(?dept_id = ?dept_id_sub)
+
+    # Compare individual to group average
+    FILTER(?salary > ?dept_avg)
+}
+```
+
+**Key Points:**
+- Use subquery with its own BIND for CSV loading
+- Use different variable names in subquery (_sub suffix)
+- Join subquery results with main query using FILTER
+- Aggregate in subquery, compare in outer query
+
+---
+
+### Pattern 2: Self-Join (Manager Relationships)
+**Use Case:** Join employees with departments where manager_id references employee_id
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+SELECT ?department_name ?manager_name ?manager_salary WHERE {
+    # Load both CSVs
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    # Get department with manager_id
+    GRAPH ?deptGraph {
+        ?dept ex:department_name ?department_name .
+        ?dept ex:manager_id ?manager_emp_id .
+    }
+
+    # Join with employees to get manager details
+    GRAPH ?empGraph {
+        ?emp ex:employee_id ?manager_emp_id .
+        ?emp ex:name ?manager_name .
+        ?emp ex:salary ?manager_salary .
+    }
+}
+ORDER BY ?department_name
+```
+
+**Key Points:**
+- Use manager_id from departments as join key
+- Match with employee_id in employees
+- This is a "self-join" concept (departments reference employees)
+
+---
+
+### Pattern 3: Anti-Join (NOT EXISTS)
+**Use Case:** Find records that DON'T match a condition (e.g., "employees who are NOT managers")
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+SELECT ?employee_name ?position WHERE {
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    # Get all employees
+    GRAPH ?empGraph {
+        ?emp ex:employee_id ?emp_id .
+        ?emp ex:name ?employee_name .
+        ?emp ex:position ?position .
+    }
+
+    # Filter out those who are managers
+    FILTER NOT EXISTS {
+        GRAPH ?deptGraph {
+            ?dept ex:manager_id ?emp_id .
+        }
+    }
+}
+ORDER BY ?employee_name
+```
+
+**Key Points:**
+- Use FILTER NOT EXISTS to exclude matches
+- Useful for finding "non-matching" records
+- Anti-join pattern for set difference
+
+---
+
+### Pattern 4: Multiple Aggregations with HAVING
+**Use Case:** Filter groups based on aggregate values
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+SELECT ?department_name
+       (COUNT(?name) AS ?emp_count)
+       (AVG(?salary) AS ?avg_salary)
+WHERE {
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    GRAPH ?empGraph {
+        ?emp ex:name ?name .
+        ?emp ex:salary ?salary .
+        ?emp ex:department_id ?dept_id .
+    }
+
+    GRAPH ?deptGraph {
+        ?dept ex:department_id ?dept_id .
+        ?dept ex:department_name ?department_name .
+    }
+}
+GROUP BY ?department_name
+HAVING (AVG(?salary) > 90000 && COUNT(?name) > 3)
+ORDER BY DESC(?avg_salary)
+```
+
+**Key Points:**
+- Use HAVING to filter on aggregated values
+- Can combine multiple conditions with && or ||
+- HAVING comes after GROUP BY
+
+---
+
+### Pattern 5: Complex Calculated Fields
+**Use Case:** Calculate ratios, percentages, or derived values
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+SELECT ?department_name
+       (SUM(?salary) AS ?total_payroll)
+       ?budget
+       ((SUM(?salary) / ?budget) * 100 AS ?payroll_pct_of_budget)
+WHERE {
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+    BIND(ggf:SLM-CSV("./demo/company/data/departments.csv") AS ?deptGraph)
+
+    GRAPH ?empGraph {
+        ?emp ex:salary ?salary .
+        ?emp ex:department_id ?dept_id .
+    }
+
+    GRAPH ?deptGraph {
+        ?dept ex:department_id ?dept_id .
+        ?dept ex:department_name ?department_name .
+        ?dept ex:budget ?budget .
+    }
+}
+GROUP BY ?department_name ?budget
+ORDER BY DESC(?payroll_pct_of_budget)
+```
+
+**Key Points:**
+- Use arithmetic in SELECT clause
+- Can calculate percentages, ratios
+- Include base values in GROUP BY if needed
+
+---
+
+### Pattern 6: String Operations
+**Use Case:** Pattern matching, filtering by text
+
+```sparql
+PREFIX ggf: <http://ggf.org/>
+PREFIX ex: <http://example.org/>
+
+SELECT ?name ?position WHERE {
+    BIND(ggf:SLM-CSV("./demo/company/data/employees.csv") AS ?empGraph)
+
+    GRAPH ?empGraph {
+        ?emp ex:name ?name .
+        ?emp ex:position ?position .
+    }
+
+    # Find Senior or VP positions
+    FILTER(REGEX(?position, "(Senior|VP)", "i"))
+}
+ORDER BY ?position ?name
+```
+
+**Key Points:**
+- Use REGEX for pattern matching
+- "i" flag for case-insensitive
+- Can use CONTAINS, STRSTARTS, STRENDS for simpler matches
+
+---
+
+## Common Mistakes to Avoid
+
+❌ **DON'T: Use aggregates inside GRAPH patterns**
+```sparql
+GRAPH ?empGraph {
+    ?emp ex:name ?name .
+    BIND(AVG(?salary) AS ?avg)  # ← WRONG! Can't aggregate here
+}
+```
+
+✅ **DO: Use subquery or GROUP BY in outer query**
+```sparql
+{
+    SELECT (AVG(?salary) AS ?avg) WHERE {
+        GRAPH ?empGraph { ?emp ex:salary ?salary . }
+    }
+}
+```
+
+---
+
+❌ **DON'T: Forget to use different variable names in subqueries**
+```sparql
+SELECT ?name WHERE {
+    BIND(ggf:SLM-CSV("file.csv") AS ?g)
+    {
+        BIND(ggf:SLM-CSV("file.csv") AS ?g)  # ← WRONG! Same variable name
+    }
+}
+```
+
+✅ **DO: Use unique variable names in subqueries**
+```sparql
+SELECT ?name WHERE {
+    BIND(ggf:SLM-CSV("file.csv") AS ?g)
+    {
+        BIND(ggf:SLM-CSV("file.csv") AS ?g_sub)  # ← Correct!
+    }
+}
+```
+
+---
+
+## Query Generation Rules
+
+1. **For comparisons to aggregates**: Use subquery pattern
+2. **For manager lookups**: Use self-join on manager_id = employee_id
+3. **For "NOT" questions**: Use FILTER NOT EXISTS
+4. **For filtering on aggregates**: Use HAVING clause
+5. **For calculated fields**: Use arithmetic in SELECT
+6. **For text matching**: Use REGEX, CONTAINS, or STRSTARTS
+7. **Always** put FILTER clauses AFTER all triple patterns
+8. **Return ONLY the SPARQL query**: No explanations, no markdown

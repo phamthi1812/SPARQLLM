@@ -1,0 +1,46 @@
+{
+  "test_id": "test_11",
+  "name": "Parallel execution opportunity",
+  "description": "Multiple independent operations that can run in parallel",
+  "question": "Search for 'SPARQL' and 'RDF' independently",
+  "logical_plan": {
+    "version": "1.0",
+    "steps": [
+      {
+        "id": "step1",
+        "operation": "web_search",
+        "ggf": {
+          "name": "SEARCH",
+          "args": {
+            "query": "SPARQL tutorial"
+          }
+        },
+        "bindings": {
+          "sparqlUrl": "?sparqlUrl",
+          "sparqlTitle": "?sparqlTitle"
+        }
+      },
+      {
+        "id": "step2",
+        "operation": "web_search",
+        "ggf": {
+          "name": "SEARCH",
+          "args": {
+            "query": "RDF tutorial"
+          }
+        },
+        "bindings": {
+          "rdfUrl": "?rdfUrl",
+          "rdfTitle": "?rdfTitle"
+        }
+      }
+    ],
+    "output": {
+      "variables": ["sparqlUrl", "sparqlTitle", "rdfUrl", "rdfTitle"]
+    }
+  },
+  "expected_bindings": ["sparqlUrl", "rdfUrl"],
+  "min_results": 1,
+  "requires_network": true,
+  "expect_parallel": true
+}
